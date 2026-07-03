@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>课程学习</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #2563EB;
+            --primary-light: #3B82F6;
+            --primary-lighter: #60A5FA;
+            --primary-bg: #EFF6FF;
+            --primary-subtle: #DBEAFE;
+            --bg: #FFFFFF;
+            --bg-secondary: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --text-tertiary: #94A3B8;
+            --border: #E2E8F0;
+            --border-light: #F1F5F9;
+            --success: #10B981;
+            --danger: #EF4444;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'PingFang SC', sans-serif;
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 16px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .back-btn:hover {
+            background: var(--primary-bg);
+            border-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+        .header h1 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .header-hint {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* ===== Content ===== */
+        .content {
+            padding: 20px 16px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ===== Driver Info Form ===== */
+        .info-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .info-form h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 22px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input::placeholder {
+            color: var(--text-tertiary);
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-subtle);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary:hover {
+            background: #1D4ED8;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-primary:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ===== Module Card ===== */
+        .module-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+        }
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding-left: 8px;
+        }
+        .module-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .module-icon.text { background: var(--primary-bg); color: var(--primary); }
+        .module-icon.video { background: var(--primary-bg); color: var(--primary); }
+        .module-icon.image { background: #ECFDF5; color: var(--success); }
+        .module-icon.gif { background: #FEF2F2; color: var(--danger); }
+        .module-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .module-content {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            padding-left: 8px;
+        }
+        .module-content img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .watched-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #ECFDF5;
+            color: var(--success);
+            border: 1px solid #A7F3D0;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 14px;
+        }
+
+        .video-progress-bar {
+            margin-top: 10px;
+            padding-left: 8px;
+        }
+        .video-progress-bar .progress-track {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .video-progress-bar .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .video-progress-bar .progress-fill.completed {
+            background: var(--success);
+        }
+        .video-progress-bar .progress-text {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        .incomplete-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+        .incomplete-modal .modal-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 24px;
+            max-width: 340px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        .incomplete-modal .modal-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+        .incomplete-modal .modal-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        .incomplete-modal .modal-list {
+            text-align: left;
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+        .incomplete-modal .modal-list li {
+            font-size: 14px;
+            color: var(--danger);
+            margin: 6px 0;
+            line-height: 1.5;
+        }
+        .incomplete-modal .modal-close {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .section-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 24px 0;
+        }
+
+        .btn-exam {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-exam:hover {
+            background: #1D4ED8;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-exam:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ===== Rich Content ===== */
+        .rich-content {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.9;
+            overflow-x: hidden;
+        }
+        .rich-content .media-wrap {
+            max-width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            margin: 14px 0;
+            box-shadow: var(--shadow-sm);
+        }
+        .rich-content .media-delete-btn {
+            display: none !important;
+        }
+
+        .rich-content h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 22px 0 14px;
+            color: var(--text-primary);
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .rich-content h2 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 18px 0 12px;
+            color: var(--primary);
+            padding: 8px 12px;
+            background: var(--primary-bg);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+        }
+        .rich-content h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 14px 0 10px;
+            color: var(--text-primary);
+            padding-left: 10px;
+            border-left: 3px solid var(--primary-light);
+        }
+        .rich-content p {
+            margin: 12px 0;
+            text-align: justify;
+            line-height: 1.9;
+        }
+        .rich-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 14px 0;
+            display: block;
+            box-shadow: var(--shadow-sm);
+        }
+        .rich-content video {
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 14px 0;
+            display: block;
+            width: 100%;
+            box-shadow: var(--shadow-sm);
+        }
+        .rich-content iframe {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rich-content ul, .rich-content ol {
+            padding-left: 24px;
+            margin: 12px 0;
+        }
+        .rich-content ul li {
+            margin: 6px 0;
+            padding-left: 8px;
+            list-style-type: none;
+            position: relative;
+        }
+        .rich-content ul li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: -16px;
+            font-size: 18px;
+        }
+        .rich-content ol li {
+            margin: 6px 0;
+            padding-left: 4px;
+        }
+        .rich-content blockquote {
+            border: none;
+            padding: 14px 18px;
+            margin: 14px 0;
+            background: var(--primary);
+            color: #FFFFFF;
+            border-radius: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+        .rich-content blockquote p {
+            color: #FFFFFF;
+            margin: 0;
+        }
+        .rich-content strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .rich-content .warning, .rich-content .alert {
+            background: #FEF2F2;
+            border-left: 4px solid var(--danger);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+            color: var(--text-secondary);
+        }
+
+        .rich-content .highlight-info,
+        .rich-content .highlight-success,
+        .rich-content .highlight-warning,
+        .rich-content .highlight-danger {
+            padding: 14px 18px;
+            margin: 14px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+        .rich-content .highlight-info {
+            background: var(--primary-bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .rich-content .highlight-success {
+            background: #ECFDF5;
+            border-color: var(--success);
+            color: var(--success);
+        }
+        .rich-content .highlight-warning {
+            background: #FFFBEB;
+            border-color: var(--warning);
+            color: #D97706;
+        }
+        .rich-content .highlight-danger {
+            background: #FEF2F2;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .rich-content .highlight-info p,
+        .rich-content .highlight-success p,
+        .rich-content .highlight-warning p,
+        .rich-content .highlight-danger p {
+            margin: 0;
+            color: inherit;
+        }
+        .rich-content hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            margin: 22px 0;
+            border-radius: 2px;
+        }
+        .rich-content div {
+            margin: 10px 0;
+        }
+        .rich-content div[style*="center"] {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 15px;
+            margin: 18px 0;
+        }
+        .rich-content div[style*="padding-bottom"] {
+            position: relative;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+            margin: 14px 0;
+            box-shadow: var(--shadow-sm);
+        }
+        .rich-content div[style*="padding-bottom"] iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        /* ===== Local Video Wrapper ===== */
+        .local-video-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg);
+            margin: 4px 0;
+            box-shadow: var(--shadow-sm);
+            aspect-ratio: 16 / 9;
+        }
+        .local-video-wrapper video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+            border-radius: 12px;
+            margin: 0;
+            box-shadow: none;
+            object-fit: contain;
+            background: #000;
+        }
+        .local-video-wrapper .video-cover-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #F8FAFC 0%, #EFF6FF 100%);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+            overflow: hidden;
+        }
+        .local-video-wrapper .video-cover-placeholder .cover-thumb-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+        .local-video-wrapper .video-cover-placeholder .cover-overlay {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.15);
+        }
+        .local-video-wrapper .video-cover-placeholder .play-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(37,99,235,0.12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(37,99,235,0.25);
+            margin-bottom: 10px;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .local-video-wrapper .video-cover-placeholder:hover .play-icon {
+            transform: scale(1.1);
+            background: rgba(37,99,235,0.2);
+        }
+        .local-video-wrapper .video-cover-placeholder .play-icon svg {
+            width: 26px;
+            height: 26px;
+            fill: var(--primary);
+            margin-left: 4px;
+        }
+        .local-video-wrapper .video-cover-placeholder .play-text {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        .local-video-wrapper .video-cover-placeholder.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-tertiary);
+            font-size: 14px;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.7s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <button class="back-btn" onclick="history.back()">←</button>
+            <h1 id="courseTitle">课程学习</h1>
+        </div>
+        <div class="header-hint">请认真阅读/观看全部内容后，点击底部「我已阅读/观看，开始考试」<sup style="color:#ccc;font-size:10px">v2.2</sup></div>
+    </div>
+
+    <div class="content">
+        <div id="infoForm" class="info-form">
+            <h3>📝 请先填写您的信息</h3>
+            <div class="form-group">
+                <label>姓名 *</label>
+                <input type="text" id="driverName" placeholder="请输入您的姓名">
+            </div>
+            <div class="form-group">
+                <label>运营城市 *</label>
+                <input type="text" id="driverCity" placeholder="请输入您的运营城市">
+            </div>
+            <div class="form-group">
+                <label>车牌号 *</label>
+                <input type="text" id="driverPlate" placeholder="请输入您的车牌号，如：湘A12345">
+            </div>
+            <button class="btn-primary" onclick="startLearning()">开始学习</button>
+        </div>
+
+        <div id="courseContent" style="display: none;">
+            <div id="moduleList"></div>
+            <div class="section-divider"></div>
+            <button class="btn-exam" id="examBtn" onclick="startExam()">
+                📝 我已阅读/观看，开始考试
+            </button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var courseId = parseInt(window.location.pathname.split('/').pop());
+            var courseData = null;
+            var driverInfo = JSON.parse(localStorage.getItem('driverInfo') || '{}');
+            var API_BASE = '';
+            var videoTrackers = {}; // moduleId -> { lastReportedPercent, timer, watchedSeconds, isBilibili }
+            var bilibiliTimers = []; // for cleanup
+
+            function init() {
+                if (driverInfo.name) {
+                    document.getElementById('driverName').value = driverInfo.name;
+                }
+                if (driverInfo.city) {
+                    document.getElementById('driverCity').value = driverInfo.city;
+                }
+                if (driverInfo.plate) {
+                    document.getElementById('driverPlate').value = driverInfo.plate;
+                }
+                loadCourse();
+            }
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text == null ? '' : String(text);
+                return div.innerHTML;
+            }
+
+            function escapeAttr(text) {
+                return escapeHtml(text).replace(/"/g, '&quot;');
+            }
+
+            function moduleHasVideoContent(module) {
+                var content = (module.content || '').toLowerCase();
+                return module.type === 'video' ||
+                    content.indexOf('<video') !== -1 ||
+                    content.indexOf('<iframe') !== -1 ||
+                    content.indexOf('bilibili') !== -1 ||
+                    /\/uploads\/videos\/|\.(mp4|webm|ogg|mov|avi)([?#]|$)/i.test(content);
+            }
+
+            async function loadCourse() {
+                try {
+                    var response = await fetch(API_BASE + '/api/courses/' + courseId);
+                    var result = await response.json();
+                    if (result.code === 200) {
+                        courseData = result.data;
+                        document.getElementById('courseTitle').textContent = courseData.title;
+                        renderModules();
+                    } else {
+                        alert('课程加载失败');
+                    }
+                } catch (_err) {
+                    alert('网络错误，请刷新重试');
+                }
+            }
+
+            function startLearning() {
+                var name = document.getElementById('driverName').value.trim();
+                var city = document.getElementById('driverCity').value.trim();
+                var plate = document.getElementById('driverPlate').value.trim();
+
+                if (!name) { alert('请输入您的姓名'); return; }
+                if (!city) { alert('请输入您的运营城市'); return; }
+                if (!plate) { alert('请输入您的车牌号'); return; }
+
+                driverInfo = { name: name, city: city, plate: plate };
+                localStorage.setItem('driverInfo', JSON.stringify(driverInfo));
+
+                document.getElementById('infoForm').style.display = 'none';
+                document.getElementById('courseContent').style.display = 'block';
+                window.scrollTo(0, 0);
+
+                // 初始化视频追踪 & 恢复已保存进度
+                initVideoTrackers();
+                restoreProgress();
+            }
+
+            function renderModules() {
+                var container = document.getElementById('moduleList');
+                if (!courseData.modules || courseData.modules.length === 0) {
+                    container.innerHTML = '<div class="loading">暂无学习内容</div>';
+                    return;
+                }
+
+                if (courseData.modules.length === 1 && courseData.modules[0].type === 'html') {
+                    var mod = courseData.modules[0];
+                    container.innerHTML =
+                        '<div class="module-card" id="module-' + mod.id + '">' +
+                        '<div class="module-header">' +
+                        '<div class="module-icon">📄</div>' +
+                        '<div class="module-title">' + escapeHtml(mod.title || '课程内容') + '</div>' +
+                        '<span class="watched-badge" id="badge-' + mod.id + '" style="display:none;">✓ 已完成</span></div>' +
+                        '<div class="rich-content">' + mod.content + '</div></div>';
+                    container.querySelectorAll('.media-delete-btn').forEach(function(btn) { btn.remove(); });
+                    wrapRichContentVideos(container);
+                    return;
+                }
+
+                container.innerHTML = courseData.modules.map(function(module, index) {
+                    if (module.type === 'html') {
+                        return '<div class="module-card" id="module-' + module.id + '">' +
+	                            '<div class="module-header">' +
+	                            '<div class="module-icon">📄</div>' +
+	                            '<div class="module-title">' + escapeHtml(module.title || '课程内容') + '</div>' +
+	                            '<span class="watched-badge" id="badge-' + module.id + '" style="display:none;">✓ 已完成</span></div>' +
+	                            '<div class="rich-content">' + module.content + '</div></div>';
+                    }
+                    var iconMap = { 'text': '📄', 'video': '🎬', 'image': '🖼️', 'gif': '🎞️' };
+                    var iconClass = module.type;
+                    var contentHtml = '';
+
+	                    if (module.type === 'text') {
+	                        contentHtml = '<div class="module-content">' + escapeHtml(module.content || '').replace(/\n/g, '<br>') + '</div>';
+	                    } else if (module.type === 'video') {
+                        var videoId = extractBiliBiliId(module.content);
+                        if (videoId) {
+                            contentHtml =
+                                '<div class="video-container bilibili-container" data-module-id="' + module.id + '">' +
+                                '<iframe src="//player.bilibili.com/player.html?bvid=' + videoId + '&page=1" ' +
+                                'frameborder="0" allowfullscreen></iframe></div>' +
+                                '<div class="video-progress-bar" id="progress-bar-' + module.id + '">' +
+                                '<div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>' +
+                                '<div class="progress-text">观看进度：0秒 / 90秒</div></div>';
+                        } else {
+                            var localVid = 'local-video-' + index;
+                            var posterUrl = getPosterUrl(module.content);
+                            var posterAttr = posterUrl ? 'poster="' + posterUrl + '"' : '';
+                            var coverBg = posterUrl
+                                ? '<img src="' + posterUrl + '" class="cover-thumb-img" alt="视频封面">'
+                                : '';
+                            contentHtml =
+                                '<div class="local-video-wrapper" id="wrapper-' + localVid + '">' +
+	                                '<video id="' + localVid + '" controls preload="none" ' + posterAttr +
+	                                ' data-module-id="' + module.id + '"' +
+	                                ' src="' + escapeAttr(module.content) + '" ' +
+	                                'ontimeupdate="hideVideoCover(this)"></video>' +
+                                '<div class="video-cover-placeholder" id="cover-' + localVid + '" ' +
+                                'onclick="playLocalVideo(\'' + localVid + '\')">' +
+                                coverBg +
+                                '<div class="cover-overlay">' +
+                                '<div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>' +
+                                '<span class="play-text">点击播放</span></div></div></div>' +
+                                '<div class="video-progress-bar" id="progress-bar-' + module.id + '">' +
+                                '<div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>' +
+                                '<div class="progress-text">播放进度：0%</div></div>';
+                        }
+	                    } else if (module.type === 'image' || module.type === 'gif') {
+	                        contentHtml = '<img src="' + escapeAttr(module.content) + '" alt="' + escapeAttr(module.title || '') + '" loading="lazy" style="max-width:100%;border-radius:10px;">';
+	                    }
+
+                    return (
+                        '<div class="module-card" id="module-' + module.id + '">' +
+                        '<div class="module-header">' +
+                        '<div class="module-icon ' + iconClass + '">' + (iconMap[module.type] || '📄') + '</div>' +
+	                        '<div class="module-title">' + (index + 1) + '. ' + escapeHtml(module.title || '课程内容') + '</div>' +
+                        '<span class="watched-badge" id="badge-' + module.id + '" style="display:none;">✓ 已完成</span></div>' +
+                        contentHtml + '</div>'
+                    );
+                }).join('');
+
+                container.querySelectorAll('.media-delete-btn').forEach(function(btn) { btn.remove(); });
+                wrapRichContentVideos(container);
+            }
+
+            function wrapRichContentVideos(container) {
+                container.querySelectorAll('.rich-content a[href*="bilibili.com/video/"]').forEach(function(link, i) {
+                    var videoId = extractBiliBiliId(link.href || link.getAttribute('href') || '');
+                    if (!videoId || link.dataset.videoEmbedded === '1') return;
+                    link.dataset.videoEmbedded = '1';
+                    var iframe = document.createElement('iframe');
+                    iframe.src = '//player.bilibili.com/player.html?bvid=' + videoId + '&page=1';
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allowfullscreen', 'true');
+                    iframe.style.position = 'absolute';
+                    iframe.style.top = '0';
+                    iframe.style.left = '0';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    var wrap = document.createElement('div');
+                    wrap.className = 'media-wrap bilibili-container';
+                    wrap.style.position = 'relative';
+                    wrap.style.paddingBottom = '56.25%';
+                    wrap.style.height = '0';
+                    wrap.style.overflow = 'hidden';
+                    wrap.style.borderRadius = '10px';
+                    wrap.style.background = '#000';
+                    wrap.appendChild(iframe);
+                    link.parentNode.insertBefore(wrap, link.nextSibling);
+                });
+
+                container.querySelectorAll('.rich-content video').forEach(function(videoEl, i) {
+                    if (!videoEl.closest('.local-video-wrapper')) {
+                        var wrapperId = 'rich-video-' + i;
+                        videoEl.id = wrapperId;
+                        videoEl.setAttribute('preload', 'none');
+                        var posterUrl = getPosterUrl(videoEl.src || videoEl.getAttribute('src') || '');
+                        if (posterUrl) videoEl.setAttribute('poster', posterUrl);
+                        videoEl.addEventListener('timeupdate', function() { hideVideoCover(this); });
+
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'local-video-wrapper';
+                        wrapper.id = 'wrapper-' + wrapperId;
+                        videoEl.parentNode.insertBefore(wrapper, videoEl);
+                        wrapper.appendChild(videoEl);
+
+                        var cover = document.createElement('div');
+                        cover.className = 'video-cover-placeholder';
+                        cover.id = 'cover-' + wrapperId;
+                        var thumbHtml = posterUrl ? '<img src="' + posterUrl + '" class="cover-thumb-img" alt="视频封面">' : '';
+                        cover.innerHTML = thumbHtml +
+                            '<div class="cover-overlay">' +
+                            '<div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>' +
+                            '<span class="play-text">点击播放</span></div>';
+                        cover.addEventListener('click', function() { playLocalVideo(wrapperId); });
+	                        wrapper.appendChild(cover);
+	                    }
+	                });
+
+                container.querySelectorAll('.rich-content iframe[src*="bilibili"]').forEach(function(iframe) {
+                    var wrap = iframe.closest('.bilibili-container');
+                    if (!wrap) {
+                        wrap = document.createElement('div');
+                        wrap.className = 'media-wrap bilibili-container';
+                        wrap.style.position = 'relative';
+                        wrap.style.paddingBottom = '56.25%';
+                        wrap.style.height = '0';
+                        wrap.style.overflow = 'hidden';
+                        wrap.style.borderRadius = '10px';
+                        wrap.style.background = '#000';
+                        iframe.style.position = 'absolute';
+                        iframe.style.top = '0';
+                        iframe.style.left = '0';
+                        iframe.style.width = '100%';
+                        iframe.style.height = '100%';
+                        iframe.parentNode.insertBefore(wrap, iframe);
+                        wrap.appendChild(iframe);
+                    }
+                });
+	            }
+
+	            function initVideoTrackers() {
+	                if (!courseData || !courseData.modules) return;
+	                videoTrackers = {};
+
+	                courseData.modules.forEach(function(module, index) {
+	                    if (!moduleHasVideoContent(module)) return;
+	                    videoTrackers[module.id] = {
+	                        lastReportedPercent: 0,
+	                        timer: null,
+	                        watchedSeconds: 0,
+	                        isBilibili: false,
+	                        isCompleted: false
+	                    };
+
+	                    var moduleEl = document.getElementById('module-' + module.id);
+	                    if (module.type === 'video') {
+	                        var biliId = extractBiliBiliId(module.content);
+	                        if (biliId) {
+	                            videoTrackers[module.id].isBilibili = true;
+	                            setupBilibiliTracker(module.id, document.querySelector('.bilibili-container[data-module-id="' + module.id + '"]'), 'video');
+	                        } else {
+	                            var videoEl = document.getElementById('local-video-' + index);
+	                            if (videoEl) setupLocalVideoTracker(module.id, videoEl);
+	                        }
+	                    } else if (moduleEl) {
+	                        var mediaEls = moduleEl.querySelectorAll('video, iframe[src*="bilibili"]');
+	                        mediaEls.forEach(function(el) {
+	                            if (el.tagName === 'VIDEO') {
+	                                setupEmbeddedVideoTracker(module.id, el);
+	                            } else {
+	                                videoTrackers[module.id].isBilibili = true;
+	                                setupBilibiliTracker(module.id, el.closest('.bilibili-container') || el, 'html');
+	                            }
+	                        });
+	                        if (mediaEls.length === 0 && extractBiliBiliId(module.content || '')) {
+	                            videoTrackers[module.id].isBilibili = true;
+	                            setupBilibiliTracker(module.id, moduleEl, 'html');
+	                        }
+	                    }
+
+	                    // 为 HTML 模块动态添加进度条
+	                    var bar = document.getElementById('progress-bar-' + module.id);
+	                    if (!bar && moduleEl) {
+	                        bar = document.createElement('div');
+	                        bar.className = 'video-progress-bar';
+	                        bar.id = 'progress-bar-' + module.id;
+	                        bar.innerHTML = '<div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>' +
+	                            '<div class="progress-text">播放进度：0%</div>';
+	                        moduleEl.appendChild(bar);
+	                    }
+	                });
+	            }
+
+	            function setupEmbeddedVideoTracker(moduleId, videoEl) {
+	                videoEl.addEventListener('timeupdate', async function() {
+	                    if (!videoEl.duration || isNaN(videoEl.duration)) return;
+	                    var playedPercent = (videoEl.currentTime / videoEl.duration) * 100;
+	                    var tracker = videoTrackers[moduleId];
+	                    if (!tracker || tracker.isCompleted) return;
+
+                    updateProgressBar(moduleId, playedPercent);
+
+	                    if (playedPercent >= 90 && !videoEl.dataset.reported) {
+	                        videoEl.dataset.reported = '1';
+	                        completeTracker(moduleId, 'html', playedPercent, 0);
+	                    }
+		                });
+		            }
+
+	            async function completeTracker(moduleId, moduleType, playedPercent, watchedSeconds) {
+	                var tracker = videoTrackers[moduleId];
+	                if (!tracker || tracker.isCompleted || tracker._completing) return;
+	                tracker._completing = true;
+	                try {
+	                    await reportProgress(moduleId, moduleType, playedPercent, watchedSeconds);
+	                    tracker.isCompleted = true;
+	                    markModuleCompleted(moduleId);
+	                } catch (err) {
+	                    tracker._completing = false;
+	                    console.error('Completion report failed:', err);
+	                }
+	            }
+
+	            function setupLocalVideoTracker(moduleId, videoEl) {
+                videoEl.addEventListener('timeupdate', async function() {
+                    if (!videoEl.duration || isNaN(videoEl.duration)) return;
+                    var playedPercent = (videoEl.currentTime / videoEl.duration) * 100;
+                    var tracker = videoTrackers[moduleId];
+                    if (!tracker || tracker.isCompleted) return;
+
+                    updateProgressBar(moduleId, playedPercent);
+
+                    // 每 5% 增量上报（非完成态）
+                    if (playedPercent < 90 && playedPercent - tracker.lastReportedPercent >= 5) {
+                        tracker.lastReportedPercent = playedPercent;
+                        reportProgress(moduleId, 'video', playedPercent, 0);
+                    }
+
+                    // ≥90%：等待写入 DB 后再标记完成
+	                    if (playedPercent >= 90 && !tracker._completing) {
+	                        tracker.lastReportedPercent = playedPercent;
+	                        await completeTracker(moduleId, 'video', playedPercent, 0);
+	                    }
+	                });
+
+                // ended 事件兜底：视频播完100%确保上报
+                videoEl.addEventListener('ended', async function() {
+	                    var tracker = videoTrackers[moduleId];
+	                    if (!tracker || tracker.isCompleted) return;
+	                    if (tracker._completing) return;
+	                    await completeTracker(moduleId, 'video', 100, 0);
+	                });
+	            }
+
+	            function setupBilibiliTracker(moduleId, container, moduleType) {
+	                if (!container) return;
+
+	                var tracker = videoTrackers[moduleId];
+                var isVisible = false;
+                var intervalId = null;
+
+                function startTimer() {
+                    if (intervalId) return;
+                    intervalId = setInterval(function() {
+                        if (tracker.isCompleted) {
+                            clearInterval(intervalId);
+                            intervalId = null;
+                            return;
+	                        }
+	                        tracker.watchedSeconds += 1;
+	                        updateProgressBar(moduleId, (tracker.watchedSeconds / 90) * 100);
+	                        if (tracker.watchedSeconds % 5 === 0) {
+	                            reportProgress(moduleId, moduleType || 'video', 0, tracker.watchedSeconds).catch(function(err) {
+	                                console.error('Bilibili progress failed:', err);
+	                            });
+	                        }
+
+	                        if (tracker.watchedSeconds >= 90 && !tracker._completing) {
+	                            completeTracker(moduleId, moduleType || 'video', 0, tracker.watchedSeconds);
+	                            clearInterval(intervalId);
+	                            intervalId = null;
+	                        }
+                    }, 1000);
+                    bilibiliTimers.push(intervalId);
+                }
+
+                function stopTimer() {
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                        intervalId = null;
+                    }
+                }
+
+                // IntersectionObserver 检测 iframe 是否在视口
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting && !document.hidden) {
+                            isVisible = true;
+                            startTimer();
+                        } else {
+                            isVisible = false;
+                            stopTimer();
+                        }
+                    });
+                }, { threshold: 0.5 });
+                observer.observe(container);
+
+                // 页面可见性检测
+                document.addEventListener('visibilitychange', function() {
+                    if (document.hidden) {
+                        stopTimer();
+                    } else if (isVisible && !tracker.isCompleted) {
+                        startTimer();
+                    }
+                });
+            }
+
+            function updateProgressBar(moduleId, percent) {
+                var bar = document.getElementById('progress-bar-' + moduleId);
+                if (!bar) return;
+                var fill = bar.querySelector('.progress-fill');
+                var text = bar.querySelector('.progress-text');
+                var tracker = videoTrackers[moduleId];
+                var clampedPercent = Math.min(percent, 100);
+
+                if (fill) {
+                    fill.style.width = clampedPercent + '%';
+                    if (percent >= 90) fill.classList.add('completed');
+                }
+	                if (text) {
+	                    if (tracker && tracker.isBilibili) {
+	                        text.textContent = tracker.isCompleted
+	                            ? '观看进度：已完成'
+	                            : '观看进度：正在记录外链视频';
+	                    } else {
+	                        text.textContent = '播放进度：' + Math.floor(clampedPercent) + '%';
+	                    }
+                }
+            }
+
+            function markModuleCompleted(moduleId) {
+                var badge = document.getElementById('badge-' + moduleId);
+                if (badge) badge.style.display = 'inline-flex';
+                updateProgressBar(moduleId, 100);
+            }
+
+	            async function reportProgress(moduleId, moduleType, playedPercent, watchedSeconds) {
+	                var response = await fetch(API_BASE + '/api/courses/' + courseId + '/progress', {
+	                    method: 'POST',
+	                    headers: { 'Content-Type': 'application/json' },
+	                    body: JSON.stringify({
+	                        driver_name: driverInfo.name,
+	                        module_id: moduleId,
+	                        module_type: moduleType,
+	                        played_percent: playedPercent,
+	                        watched_seconds: watchedSeconds
+	                    })
+	                });
+	                var result = await response.json().catch(function() { return null; });
+	                if (!response.ok || !result || result.code !== 200) {
+	                    throw new Error((result && result.msg) || '进度上报失败');
+	                }
+	                return result.data;
+	            }
+
+            async function restoreProgress() {
+                if (!driverInfo.name) return;
+                try {
+                    var response = await fetch(API_BASE + '/api/courses/' + courseId + '/progress?driver_name=' + encodeURIComponent(driverInfo.name));
+                    var result = await response.json();
+                    if (result.code === 200 && result.data) {
+                        result.data.modules.forEach(function(m) {
+                            if (m.is_completed) {
+                                if (videoTrackers[m.module_id]) {
+                                    videoTrackers[m.module_id].isCompleted = true;
+                                }
+                                markModuleCompleted(m.module_id);
+                            } else {
+                                // 恢复已有进度显示
+                                var tracker = videoTrackers[m.module_id];
+                                if (tracker) {
+                                    if (tracker.isBilibili && m.watched_seconds > 0) {
+                                        tracker.watchedSeconds = m.watched_seconds;
+                                        updateProgressBar(m.module_id, (m.watched_seconds / 90) * 100);
+                                    } else if (!tracker.isBilibili && m.played_percent > 0) {
+                                        tracker.lastReportedPercent = m.played_percent;
+                                        updateProgressBar(m.module_id, m.played_percent);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } catch (err) {
+                    console.error('restoreProgress failed:', err);
+                }
+            }
+
+	            async function startExam() {
+	                if (!courseData) { alert('课程数据未加载，请刷新页面'); return; }
+	                if (!driverInfo || !driverInfo.name) { alert('请先填写姓名并开始学习'); return; }
+
+	                var btn = document.getElementById('examBtn');
+	                if (btn) { btn.disabled = true; btn.textContent = '正在进入考试...'; }
+
+	                sessionStorage.setItem('examCourseId', courseId);
+	                sessionStorage.setItem('examDriverName', driverInfo.name);
+	                sessionStorage.setItem('examDriverCity', driverInfo.city || '');
+	                sessionStorage.setItem('examDriverPlate', driverInfo.plate || '');
+                window.location.href = '/exam/' + courseId;
+            }
+
+            async function checkProgress() {
+                var response = await fetch(API_BASE + '/api/courses/' + courseId + '/progress?driver_name=' + encodeURIComponent(driverInfo.name));
+                if (!response.ok) throw new Error('服务器响应异常');
+                var result = await response.json();
+                if (!result || result.code !== 200 || !result.data) {
+                    throw new Error('进度数据异常');
+                }
+                return {
+                    all_completed: result.data.all_videos_completed,
+                    incomplete: result.data.modules
+                        .filter(function(m) { return !m.is_completed; })
+                        .map(function(m) { return m.title; })
+                };
+            }
+
+            function allLocalTrackersCompleted() {
+                var keys = Object.keys(videoTrackers);
+                if (keys.length === 0) return false;
+                return keys.every(function(k) { return videoTrackers[k].isCompleted === true; });
+            }
+
+            function showIncompleteModal(incompleteNames) {
+                var existing = document.querySelector('.incomplete-modal');
+                if (existing) existing.remove();
+
+                var modal = document.createElement('div');
+                modal.className = 'incomplete-modal';
+                modal.innerHTML =
+                    '<div class="modal-box">' +
+                    '<div class="modal-icon">⏳</div>' +
+                    '<div class="modal-title">视频未学习完</div>' +
+                    '<div style="font-size:14px;color:#64748B;margin-bottom:8px;">请先完成以下视频的学习：</div>' +
+                    '<ul class="modal-list">' +
+                    incompleteNames.map(function(n) { return '<li>' + n + '</li>'; }).join('') +
+                    '</ul>' +
+                    '<button class="modal-close" onclick="this.closest(\'.incomplete-modal\').remove()">我知道了</button>' +
+                    '</div>';
+                document.body.appendChild(modal);
+
+                // 点击遮罩关闭
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) modal.remove();
+                });
+
+                // 3秒后自动关闭
+                setTimeout(function() {
+                    if (modal.parentNode) modal.remove();
+                }, 8000);
+            }
+
+            function getPosterUrl(videoSrc) {
+                var cleanSrc = videoSrc.split('#')[0];
+                var match = cleanSrc.match(/\/static\/uploads\/videos\/([^?#]+)$/);
+                if (!match) return null;
+                var base = match[1].replace(/\.[^.]+$/, '');
+                return '/static/uploads/thumbnails/' + base + '.jpg';
+            }
+
+            function playLocalVideo(videoId) {
+                var videoEl = document.getElementById(videoId);
+                var cover = document.getElementById('cover-' + videoId);
+                if (!videoEl) return;
+                if (cover) cover.classList.add('hidden');
+                videoEl.play();
+            }
+
+            function hideVideoCover(videoEl) {
+                if (videoEl.currentTime > 0) {
+                    var cover = document.getElementById('cover-' + videoEl.id);
+                    if (cover && !cover.classList.contains('hidden')) {
+                        cover.classList.add('hidden');
+                    }
+                }
+            }
+
+            function extractBiliBiliId(url) {
+                var match = url.match(/video\/(BV[\w]+)/i) || url.match(/BV([\w]+)/i);
+                return match ? match[1] : null;
+            }
+
+            // Expose functions needed by inline event handlers
+            window.startLearning = startLearning;
+            window.startExam = startExam;
+            window.playLocalVideo = playLocalVideo;
+            window.hideVideoCover = hideVideoCover;
+
+            init();
+        })();
+    </script>
+</body>
+</html>

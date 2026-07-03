@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轻卡安全大讲堂 - 管理后台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-light: #3B82F6;
+            --primary-dark: #1D4ED8;
+            --primary-bg: #EFF6FF;
+            --primary-border: #BFDBFE;
+            --bg: #FFFFFF;
+            --bg-secondary: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --text: #1E293B;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --border-light: #F1F5F9;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+            --success: #22C55E;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            color: var(--text);
+        }
+        /* 登录页样式 */
+        .login-page {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 50%, #BFDBFE 100%);
+        }
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 45px 40px; width: 400px;
+            box-shadow: var(--shadow-lg);
+        }
+        .login-card h2 {
+            text-align: center;
+            color: var(--primary); font-size: 28px; margin-bottom: 30px; letter-spacing: 2px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 500; }
+        .form-group input {
+            width: 100%; padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 15px; color: var(--text); outline: none;
+        }
+        .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .form-group input::placeholder { color: var(--text-muted); }
+        .btn-primary {
+            width: 100%; padding: 14px;
+            background: var(--primary);
+            color: white; border: none; border-radius: var(--radius-sm);
+            font-size: 16px; cursor: pointer; font-weight: 600; letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+        /* 管理后台样式 */
+        .admin-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 220px; background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            color: var(--text); padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; z-index: 100;
+        }
+        .sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .sidebar-logo h3 { font-size: 18px; color: var(--primary); letter-spacing: 1px; }
+        .sidebar-logo p { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+        .nav-item {
+            padding: 14px 20px; cursor: pointer; display: flex; align-items: center;
+            gap: 10px; transition: all 0.3s; border-left: 3px solid transparent; color: var(--text-secondary);
+        }
+        .nav-item:hover { background: var(--primary-bg); color: var(--primary); }
+        .nav-item.active { background: var(--primary-bg); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+        .nav-item-icon { font-size: 18px; }
+        .main-content { flex: 1; margin-left: 220px; padding: 20px; background: var(--bg-secondary); min-height: 100vh; }
+        .header-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 18px 24px; border-radius: var(--radius);
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .header-bar h2 { font-size: 18px; color: var(--text); font-weight: 600; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .page-title {
+            font-size: 20px; color: var(--text); margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        /* 卡片样式 */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px; margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+        }
+        .card-title { font-size: 16px; font-weight: 600; color: var(--text); }
+        .btn {
+            padding: 8px 18px; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 14px;
+            border: none; transition: all 0.3s; font-weight: 500;
+        }
+        .btn-add { background: var(--primary); color: white; }
+        .btn-add:hover { background: var(--primary-dark); }
+        .btn-edit { background: var(--primary-bg); color: var(--primary); border: 1px solid var(--primary-border); }
+        .btn-edit:hover { background: #DBEAFE; }
+        .btn-delete { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; }
+        .btn-delete:hover { background: #FEE2E2; }
+        .btn-export { background: var(--primary-bg); color: var(--primary); border: 1px solid var(--primary-border); }
+        .btn-export:hover { background: #DBEAFE; }
+        /* 表格样式 */
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        .table th { background: var(--bg-secondary); font-weight: 600; color: var(--text-secondary); font-size: 13px; }
+        .table td { color: var(--text); font-size: 14px; }
+        .table tr:hover td { background: var(--bg-secondary); }
+        .actions { display: flex; gap: 8px; }
+        .actions .btn { padding: 5px 10px; font-size: 12px; }
+        /* 表单样式 */
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-col { flex: 1; }
+        .form-col label { display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 14px; font-weight: 500; }
+        .form-col input, .form-col textarea, .form-col select {
+            width: 100%; padding: 12px 14px;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 14px; outline: none; color: var(--text);
+        }
+        .form-col textarea { resize: vertical; min-height: 80px; }
+        .form-col input:focus, .form-col textarea:focus, .form-col select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .form-col input::placeholder, .form-col textarea::placeholder { color: var(--text-muted); }
+        .form-col select option { background: var(--bg-card); color: var(--text); }
+        /* 模态框样式 */
+        .modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: 90%; max-width: 600px; max-height: 90vh;
+            overflow-y: auto; padding: 28px;
+            box-shadow: var(--shadow-lg);
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+        }
+        .modal-title { font-size: 18px; font-weight: 600; color: var(--text); }
+        .modal-close {
+            width: 34px; height: 34px; border-radius: 50%; background: var(--bg-secondary);
+            border: 1px solid var(--border); cursor: pointer; font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-secondary); transition: all 0.2s;
+        }
+        .modal-close:hover { background: #FEF2F2; color: var(--danger); border-color: #FECACA; }
+        .modal-footer {
+            display: flex; justify-content: flex-end; gap: 10px;
+            margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+        }
+        .btn-cancel { background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-cancel:hover { background: var(--border); }
+        /* 富文本编辑器 */
+        .editor-container { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-card); }
+        .editor-toolbar {
+            display: flex; flex-direction: column; padding: 8px 10px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border); gap: 0;
+        }
+        .editor-toolbar .toolbar-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+        .editor-toolbar .toolbar-group {
+            display: flex; gap: 3px; align-items: center;
+            padding-right: 8px; border-right: 1px solid var(--border); margin-right: 4px;
+        }
+        .editor-toolbar .toolbar-row:last-child .toolbar-group:last-child { border-right: none; }
+        .editor-toolbar button {
+            width: 32px; height: 32px; border: 1px solid var(--border);
+            border-radius: 5px; background: var(--bg-card); cursor: pointer;
+            font-size: 14px; display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s; color: var(--text-secondary);
+        }
+        .editor-toolbar button:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary-border); }
+        .editor-toolbar button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .editor-toolbar select {
+            height: 32px; border: 1px solid var(--border); border-radius: 5px;
+            padding: 0 6px; font-size: 13px; background: var(--bg-card); color: var(--text); cursor: pointer;
+        }
+        .editor-toolbar select option { background: var(--bg-card); color: var(--text); }
+        .editor-toolbar .upload-btn {
+            width: auto; padding: 0 10px; font-size: 13px; gap: 4px;
+            background: var(--primary-bg); border: 1px solid var(--primary-border); color: var(--primary);
+        }
+        .editor-toolbar .upload-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .editor-toolbar .upload-btn input[type=file] { display: none; }
+        .editor-body {
+            min-height: 400px; max-height: 600px; overflow-y: auto;
+            padding: 15px; outline: none; font-size: 15px; line-height: 1.8; color: var(--text);
+            background: var(--bg-card);
+        }
+        .editor-body:focus { outline: none; }
+        .editor-body img { max-width: 100%; border-radius: var(--radius-sm); margin: 6px 0; display: block; }
+        .editor-body video { max-width: 100%; border-radius: var(--radius-sm); margin: 6px 0; display: block; }
+        .editor-body iframe { max-width: 100%; border-radius: var(--radius-sm); margin: 6px 0; display: block; }
+        .editor-body .media-wrap { position: relative; margin: 8px 0; border-radius: var(--radius-sm); overflow: visible; }
+        .editor-body .media-wrap:hover { outline: 1px dashed var(--primary-border); }
+        .editor-body .media-wrap-selected { outline: 2px solid var(--danger); }
+        .media-delete-btn {
+            position: absolute; top: 6px; right: 6px; width: 26px; height: 26px;
+            background: rgba(239,68,68,0.8); color: white; border: none; border-radius: 6px;
+            cursor: pointer; align-items: center; justify-content: center; z-index: 10;
+            font-size: 14px; line-height: 1; opacity: 0.7; transition: opacity 0.15s;
+        }
+        .media-delete-btn:hover { opacity: 1; background: #DC2626; }
+        .editor-body h1 { font-size: 22px; margin: 12px 0 8px; color: var(--text); }
+        .editor-body h2 { font-size: 18px; margin: 10px 0 6px; color: var(--text); }
+        .editor-body h3 { font-size: 16px; margin: 8px 0 5px; color: var(--text-secondary); }
+        .editor-body p { margin: 6px 0; }
+        .editor-body ul, .editor-body ol { padding-left: 24px; margin: 6px 0; }
+        .editor-body blockquote {
+            border-left: 4px solid var(--primary); padding: 8px 12px; margin: 8px 0;
+            background: var(--primary-bg); border-radius: 0 6px 6px 0; color: var(--text-secondary);
+        }
+        .editor-body .highlight-info,
+        .editor-body .highlight-success,
+        .editor-body .highlight-warning,
+        .editor-body .highlight-danger {
+            padding: 10px 14px; border-left: 4px solid; border-radius: 0 6px 6px 0; margin: 8px 0;
+        }
+        .editor-body .highlight-info { background: #EFF6FF; border-color: #3B82F6; color: #1D4ED8; }
+        .editor-body .highlight-success { background: #F0FDF4; border-color: #22C55E; color: #166534; }
+        .editor-body .highlight-warning { background: #FFFBEB; border-color: #F59E0B; color: #92400E; }
+        .editor-body .highlight-danger { background: #FEF2F2; border-color: #EF4444; color: #991B1B; }
+        .editor-body .highlight-info p, .editor-body .highlight-success p,
+        .editor-body .highlight-warning p, .editor-body .highlight-danger p { margin: 0; color: inherit; }
+        .editor-status {
+            padding: 6px 12px; background: var(--bg-secondary);
+            border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted);
+        }
+        .editor-panel {
+            position: absolute; top: 36px; left: 0;
+            background: var(--bg-card); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-md); padding: 8px; z-index: 100; min-width: 160px;
+        }
+        .editor-panel.hidden { display: none; }
+        .color-swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; display: inline-block; margin: 3px; }
+        .color-swatch:hover { border-color: var(--primary); }
+        .highlight-option {
+            display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+            border-radius: 5px; cursor: pointer; font-size: 13px; color: var(--text); transition: background 0.15s;
+        }
+        .highlight-option:hover { background: var(--primary-bg); }
+        .highlight-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .upload-progress {
+            display: none; padding: 8px 12px; background: var(--primary-bg);
+            border-top: 1px solid var(--border); font-size: 13px; color: var(--primary);
+        }
+        /* 题目编辑器 */
+        .question-editor {
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 20px; margin-bottom: 15px; background: var(--bg-secondary);
+        }
+        .question-editor .question-num {
+            display: inline-block; background: var(--primary-bg); color: var(--primary);
+            padding: 4px 14px; border-radius: 15px; font-size: 13px; font-weight: 600; margin-bottom: 15px;
+        }
+        .option-editor { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .option-editor .option-label {
+            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+            background: var(--primary-bg); border-radius: 50%; font-weight: 700; font-size: 13px; color: var(--primary); flex-shrink: 0;
+        }
+        .option-editor input[type="radio"],
+        .option-editor input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+        .option-editor input[type="text"] {
+            flex: 1; padding: 10px 12px; background: var(--bg-secondary);
+            border: 1px solid var(--border); border-radius: 6px; font-size: 14px; color: var(--text);
+        }
+        /* 二维码样式 */
+        .qr-section { text-align: center; padding: 20px; }
+        .qr-code {
+            display: inline-block; padding: 20px; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: var(--radius);
+        }
+        .qr-url {
+            margin-top: 15px; padding: 12px; background: var(--bg-secondary);
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            font-size: 13px; color: var(--text-muted); word-break: break-all;
+        }
+        /* 统计卡片 */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 24px; text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-card .number {
+            font-size: 32px; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .stat-card .label { font-size: 14px; color: var(--text-secondary); margin-top: 5px; }
+        /* 隐藏 */
+        .hidden { display: none !important; }
+        /* 模块列表 */
+        .module-item {
+            display: flex; align-items: center; gap: 12px; padding: 14px;
+            background: var(--bg-secondary); border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm); margin-bottom: 10px;
+        }
+        .module-item .icon { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .module-item .icon.text { background: rgba(37,99,235,0.1); }
+        .module-item .icon.video { background: rgba(59,130,246,0.1); }
+        .module-item .icon.image { background: rgba(34,197,94,0.1); }
+        .module-item .icon.gif { background: rgba(239,68,68,0.1); }
+        .module-item .info { flex: 1; }
+        .module-item .title { font-weight: 500; color: var(--text); }
+        .module-item .type { font-size: 12px; color: var(--text-muted); }
+        .module-item .actions { display: flex; gap: 5px; }
+        .module-item .actions .btn { padding: 5px 8px; font-size: 12px; }
+        /* 空状态 */
+        .empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
+        /* 成功提示 */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white; padding: 12px 24px; border-radius: var(--radius-sm);
+            z-index: 2000; animation: fadeIn 0.3s; font-weight: 500;
+            box-shadow: var(--shadow-md);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        /* 课程拖拽排序 */
+        .course-item {
+            display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); margin-bottom: 8px; cursor: grab; transition: all 0.2s;
+        }
+        .course-item:hover { background: var(--bg-secondary); border-color: var(--primary-border); }
+        .course-item.dragging { opacity: 0.5; background: var(--primary-bg); }
+        .course-item .drag-handle { font-size: 18px; color: var(--text-muted); cursor: grab; user-select: none; }
+        .course-item .course-info { flex: 1; }
+        .course-item .course-info strong { display: block; color: var(--text); margin-bottom: 4px; }
+        .course-item .course-info span { font-size: 12px; color: var(--text-muted); }
+        .course-item .actions { display: flex; gap: 6px; }
+        .sort-save-bar {
+            background: var(--primary-bg); border: 1px solid var(--primary-border);
+            border-radius: var(--radius-sm); padding: 10px 16px; margin-bottom: 15px;
+            display: flex; align-items: center; justify-content: space-between; color: var(--primary);
+        }
+        /* 题目类型标签 */
+        .q-type-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+        .q-type-badge.single { background: rgba(37,99,235,0.1); color: var(--primary); }
+        .q-type-badge.multiple { background: rgba(34,197,94,0.1); color: var(--success); }
+        /* 管理员列表 */
+        .admin-role-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+        .admin-role-badge.super_admin { background: #FEF2F2; color: var(--danger); }
+        .admin-role-badge.normal_admin { background: var(--primary-bg); color: var(--primary); }
+        .admin-status-active { color: var(--success); font-weight: 600; }
+        .admin-status-disabled { color: var(--text-muted); }
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <h2>🔐 管理后台登录</h2>
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="loginUsername" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码">
+            </div>
+            <button class="btn-primary" onclick="doLogin()">登 录</button>
+        </div>
+    </div>
+
+    <!-- 管理后台 -->
+    <div id="adminPage" class="admin-layout hidden">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <h3>🚛 安全大讲堂</h3>
+                <p>管理后台</p>
+            </div>
+            <div class="nav-item active" onclick="showPage('courses')">
+                <span class="nav-item-icon">📚</span>
+                <span>课程管理</span>
+            </div>
+            <div class="nav-item" onclick="showPage('scores')">
+                <span class="nav-item-icon">📊</span>
+                <span>成绩管理</span>
+            </div>
+            <div class="nav-item" onclick="showPage('qrcode')">
+                <span class="nav-item-icon">📱</span>
+                <span>入口二维码</span>
+            </div>
+            <div class="nav-item" onclick="showPage('admins')" id="navAdmins" style="display:none;">
+                <span class="nav-item-icon">🛡️</span>
+                <span>管理员账号</span>
+            </div>
+            <div class="nav-item" onclick="showPage('settings')">
+                <span class="nav-item-icon">⚙️</span>
+                <span>系统设置</span>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 课程管理 -->
+            <div id="pageCourses" class="page">
+                <div class="header-bar">
+                    <h2>📚 课程管理</h2>
+                    <button class="btn btn-add" onclick="showCourseModal()">+ 添加课程</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">课程列表</span>
+                    </div>
+                    <div id="courseList"></div>
+                </div>
+            </div>
+
+            <!-- 成绩管理 -->
+            <div id="pageScores" class="page hidden">
+                <div class="header-bar">
+                    <h2>📊 成绩管理</h2>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">选择课程查看成绩</span>
+                    </div>
+                    <select id="scoreCourseSelect" onchange="loadScores()" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px;">
+                        <option value="">请选择课程</option>
+                    </select>
+                    <div id="scoreActions" class="hidden" style="margin-bottom: 15px;">
+                        <button class="btn btn-export" onclick="exportScores()">📥 导出Excel</button>
+                    </div>
+                    <div id="scoreList"></div>
+                </div>
+            </div>
+
+            <!-- 二维码 -->
+            <div id="pageQrcode" class="page hidden">
+                <div class="header-bar">
+                    <h2>📱 入口二维码</h2>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">各课程入口</span>
+                    </div>
+                    <div id="qrcodeList" class="qr-section"></div>
+                </div>
+            </div>
+
+            <!-- 系统设置 -->
+            <div id="pageSettings" class="page hidden">
+                <div class="header-bar">
+                    <h2>⚙️ 系统设置</h2>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">修改密码</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label>原密码</label>
+                            <input type="password" id="oldPassword" placeholder="请输入原密码">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label>新密码</label>
+                            <input type="password" id="newPassword" placeholder="请输入新密码（至少6位）">
+                        </div>
+                    </div>
+                    <button class="btn btn-add" onclick="changePassword()">确认修改</button>
+                </div>
+            </div>
+
+            <!-- 管理员账号管理页面（仅超级管理员可见） -->
+            <div id="pageAdmins" class="page hidden">
+                <div class="header-bar">
+                    <h2>🛡️ 管理员账号管理</h2>
+                    <button class="btn btn-add" onclick="showAddAdminModal()">+ 添加管理员</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">管理员列表</span>
+                    </div>
+                    <div id="adminList">
+                        <div class="loading-state" style="text-align:center;padding:40px;color:var(--text-muted);">
+                            <span style="font-size:24px;">⏳</span><br>加载中...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 课程编辑模态框 -->
+    <div id="courseModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="courseModalTitle">添加课程</span>
+                <button class="modal-close" onclick="closeModal('courseModal')">×</button>
+            </div>
+            <input type="hidden" id="courseId">
+            <div class="form-col" style="margin-bottom: 15px;">
+                <label>课程名称 *</label>
+                <input type="text" id="courseTitle" placeholder="如：追尾事故预防">
+            </div>
+            <div class="form-col" style="margin-bottom: 15px;">
+                <label>课程介绍</label>
+                <textarea id="courseDescription" placeholder="请输入课程简介"></textarea>
+            </div>
+            <div class="form-col" style="margin-bottom: 15px;">
+                <label>封面图片URL</label>
+                <input type="text" id="courseCover" placeholder="输入图片URL（可选）">
+            </div>
+            <div class="form-col" style="margin-bottom: 15px;">
+                <label>及格分数</label>
+                <input type="number" id="coursePassingScore" value="80" min="0" max="100">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeModal('courseModal')">取消</button>
+                <button class="btn btn-add" onclick="saveCourse()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 课程详情模态框（含富文本编辑器） -->
+    <div id="courseDetailModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 860px; width: 95%;">
+            <div class="modal-header">
+                <span class="modal-title" id="courseDetailTitle">课程详情</span>
+                <button class="modal-close" onclick="closeModal('courseDetailModal')">×</button>
+            </div>
+            <input type="hidden" id="detailCourseId">
+
+            <!-- 富文本编辑器区域 -->
+            <div style="margin-bottom: 8px; font-weight: 600; color: var(--text); font-size: 15px;">
+                📝 学习内容编辑
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: normal; margin-left: 8px;">支持文字、图片、动图、视频，像编辑公众号文章一样操作</span>
+            </div>
+
+            <div class="editor-container">
+                <!-- 工具栏 -->
+                <div class="editor-toolbar">
+                    <!-- 第一行：文字格式 -->
+                    <div class="toolbar-row">
+                        <div class="toolbar-group">
+                            <select id="fontSizeSelect" onchange="execCmd('fontSize', this.value)" title="字号">
+                                <option value="3" selected>正文</option>
+                                <option value="5">大字</option>
+                                <option value="6">特大</option>
+                                <option value="2">小字</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-group">
+                            <button onclick="execCmd('bold')" title="加粗"><b>B</b></button>
+                            <button onclick="execCmd('italic')" title="斜体"><i>I</i></button>
+                            <button onclick="execCmd('underline')" title="下划线"><u>U</u></button>
+                            <button onclick="execCmd('strikeThrough')" title="删除线"><s>S</s></button>
+                        </div>
+                        <div class="toolbar-group">
+                            <button onclick="insertHeading('h2')" title="标题">H2</button>
+                            <button onclick="insertHeading('h3')" title="小标题">H3</button>
+                            <button onclick="execCmd('insertUnorderedList')" title="无序列表">≡</button>
+                            <button onclick="execCmd('insertOrderedList')" title="有序列表">①</button>
+                            <button onclick="insertBlockquote()" title="引用块">❝</button>
+                        </div>
+                        <div class="toolbar-group">
+                            <button onclick="execCmd('justifyLeft')" title="左对齐">⬅</button>
+                            <button onclick="execCmd('justifyCenter')" title="居中">↔</button>
+                            <button onclick="execCmd('justifyRight')" title="右对齐">➡</button>
+                        </div>
+                        <div class="toolbar-group" style="position: relative;">
+                            <button onclick="toggleColorPanel()" title="文字颜色">
+                                <span style="color:#e74c3c;">A</span>
+                            </button>
+                            <div id="colorPanel" class="editor-panel hidden">
+                                <div class="color-swatch" style="background:#e74c3c;" onclick="setTextColor('#e74c3c')" title="红色"></div>
+                                <div class="color-swatch" style="background:#3498db;" onclick="setTextColor('#3498db')" title="蓝色"></div>
+                                <div class="color-swatch" style="background:#27ae60;" onclick="setTextColor('#27ae60')" title="绿色"></div>
+                                <div class="color-swatch" style="background:#e67e22;" onclick="setTextColor('#e67e22')" title="橙色"></div>
+                                <div class="color-swatch" style="background:#9b59b6;" onclick="setTextColor('#9b59b6')" title="紫色"></div>
+                                <div class="color-swatch" style="background:#333333;" onclick="setTextColor('#333333')" title="黑色"></div>
+                            </div>
+                            <button onclick="toggleHighlightPanel()" title="高亮块">
+                                🎨
+                            </button>
+                            <div id="highlightPanel" class="editor-panel hidden">
+                                <div class="highlight-option" onclick="insertHighlightBlock('info')">
+                                    <span class="highlight-dot" style="background:#1976d2;"></span>
+                                    <span>信息提示</span>
+                                </div>
+                                <div class="highlight-option" onclick="insertHighlightBlock('success')">
+                                    <span class="highlight-dot" style="background:#388e3c;"></span>
+                                    <span>成功/正确</span>
+                                </div>
+                                <div class="highlight-option" onclick="insertHighlightBlock('warning')">
+                                    <span class="highlight-dot" style="background:#f57f17;"></span>
+                                    <span>警告/注意</span>
+                                </div>
+                                <div class="highlight-option" onclick="insertHighlightBlock('danger')">
+                                    <span class="highlight-dot" style="background:#c62828;"></span>
+                                    <span>危险/禁止</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toolbar-group">
+                            <button onclick="execCmd('removeFormat')" title="清除格式" style="font-size: 12px;">清格式</button>
+                            <button onclick="execCmd('undo')" title="撤销">↩</button>
+                            <button onclick="execCmd('redo')" title="重做">↪</button>
+                        </div>
+                    </div>
+                    <!-- 第二行：插入操作 -->
+                    <div class="toolbar-row" style="border-top: 1px solid var(--border); margin-top: 4px; padding-top: 6px;">
+                        <div class="toolbar-group">
+                            <label class="upload-btn" title="上传图片/动图（支持JPG/PNG/GIF/WEBP）">
+                                🖼️ 插入图片
+                                <input type="file" accept="image/*" onmousedown="saveEditorCursor()" onchange="uploadAndInsert(this, 'image')">
+                            </label>
+                            <label class="upload-btn" title="上传视频（支持MP4/WEBM/MOV）">
+                                🎬 插入视频
+                                <input type="file" accept="video/*" onmousedown="saveEditorCursor()" onchange="uploadAndInsert(this, 'video')">
+                            </label>
+                            <label class="upload-btn" title="粘贴视频链接（B站/MP4直链）" onclick="insertVideoLink()">
+                                🔗 视频链接
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 编辑区 -->
+                <div id="richEditor" class="editor-body" contenteditable="true"
+                    placeholder="在这里输入课程内容，支持插入图片、动图、视频..."
+                    oninput="markEditorDirty()">
+                </div>
+                <div class="upload-progress" id="uploadProgress">📤 正在上传文件，请稍候...</div>
+                <div class="editor-status" id="editorStatus">就绪 · 支持粘贴图片（Ctrl+V）</div>
+            </div>
+
+            <div style="margin-top: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                <button class="btn btn-add" onclick="saveRichContent()" id="saveContentBtn">💾 保存学习内容</button>
+                <span id="contentSaveStatus" style="font-size: 13px; color: var(--text-muted);"></span>
+            </div>
+
+            <div class="section-divider" style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
+
+            <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: var(--text);">📋 考试题目</span>
+                <button class="btn btn-add" onclick="showQuestionModal()">+ 添加题目</button>
+            </div>
+
+            <div id="questionList"></div>
+
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeModal('courseDetailModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 题目编辑模态框 -->
+    <div id="questionModal" class="modal hidden" style="z-index: 3000;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <span class="modal-title" id="questionModalTitle">添加题目</span>
+                <button class="modal-close" onclick="closeModal('questionModal')">×</button>
+            </div>
+            <input type="hidden" id="questionId">
+            <input type="hidden" id="questionCourseId">
+            
+            <div class="form-col" style="margin-bottom: 15px;">
+                <label>题目内容 *</label>
+                <textarea id="questionText" placeholder="请输入题目内容" style="min-height: 80px;"></textarea>
+            </div>
+
+            <!-- 题型切换：单选/多选 -->
+            <div style="margin-bottom: 15px; padding: 10px 12px; background: var(--bg-secondary); border-radius: 6px;">
+                <span style="font-weight: 600; color: var(--text-secondary); margin-right: 15px;">题目类型：</span>
+                <label style="margin-right: 20px; cursor: pointer;">
+                    <input type="radio" id="qTypeSingle" name="qType" value="single" checked onchange="renderQuestionTypeOptions()">
+                    ☉ 单选题（选1个正确答案）
+                </label>
+                <label style="cursor: pointer;">
+                    <input type="radio" id="qTypeMultiple" name="qType" value="multiple" onchange="renderQuestionTypeOptions()">
+                    ☑ 多选题（选2个及以上正确答案）
+                </label>
+            </div>
+
+            <!-- 动态渲染的正确答案选项容器 -->
+            <div id="correctOptionsContainer"></div>
+
+            <label style="display: block; margin-bottom: 10px; color: var(--text-muted); margin-top: 15px;">选项内容（请填写选项文字）</label>
+            <div id="optionsContainer">
+                <div class="option-editor">
+                    <span class="option-label">A</span>
+                    <input type="text" id="option0" placeholder="选项A内容">
+                </div>
+                <div class="option-editor">
+                    <span class="option-label">B</span>
+                    <input type="text" id="option1" placeholder="选项B内容">
+                </div>
+                <div class="option-editor">
+                    <span class="option-label">C</span>
+                    <input type="text" id="option2" placeholder="选项C内容">
+                </div>
+                <div class="option-editor">
+                    <span class="option-label">D</span>
+                    <input type="text" id="option3" placeholder="选项D内容">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeModal('questionModal')">取消</button>
+                <button class="btn btn-add" onclick="saveQuestion()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理员添加/编辑模态框 -->
+    <div id="adminModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="adminModalTitle">添加管理员</span>
+                <button class="modal-close" onclick="closeModal('adminModal')">×</button>
+            </div>
+            <input type="hidden" id="adminAccountId">
+            <div class="form-row">
+                <div class="form-col">
+                    <label>用户名 *</label>
+                    <input type="text" id="adminUsername" placeholder="请输入用户名">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-col">
+                    <label>密码 *（编辑时留空表示不修改）</label>
+                    <input type="password" id="adminPassword" placeholder="请输入密码（至少6位）">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-col">
+                    <label>角色</label>
+                    <select id="adminRole" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;">
+                        <option value="normal_admin">普通管理员（无法修改课程/题目/成绩）</option>
+                        <option value="super_admin">超级管理员（全部权限）</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeModal('adminModal')">取消</button>
+                <button class="btn btn-add" onclick="saveAdmin()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 全局变量 ====================
+        let currentPage = 'courses';
+        let courses = [];
+        let currentCourseId = null;
+        let editorDirty = false;
+        let serverBaseUrl = window.location.origin;
+        let savedEditorRange = null;
+        let currentAdminRole = '';
+        let currentAdminId = null;
+
+        // ==================== 初始化 ====================
+        async function init() {
+            await checkLogin();
+            try {
+                const r = await fetch('/api/server-ip');
+                const d = await r.json();
+                if (d.code === 200 && d.ip) serverBaseUrl = `http://${d.ip}:${d.port}`;
+            } catch(e) {}
+            initEditorPaste();
+            initMediaClickHandler();
+            initFontSizeTracker();
+        }
+
+        // ==================== 编辑器工具函数 ====================
+        function execCmd(cmd, value) {
+            const editor = document.getElementById('richEditor');
+            // 恢复之前保存的选区（如果有）
+            if (savedEditorRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedEditorRange.cloneRange());
+                savedEditorRange = null;
+            }
+            editor.focus();
+            document.execCommand(cmd, false, value || null);
+            updateEditorStatus();
+        }
+
+        function insertHTMLAtCursor(html) {
+            const editor = document.getElementById('richEditor');
+            if (!editor) return;
+            let insertRange = null;
+            if (savedEditorRange) {
+                insertRange = savedEditorRange.cloneRange();
+                savedEditorRange = null;
+            }
+            if (!insertRange) {
+                try {
+                    const sel = window.getSelection();
+                    if (sel && sel.rangeCount > 0) {
+                        const r = sel.getRangeAt(0);
+                        if (editor.contains(r.startContainer)) insertRange = r.cloneRange();
+                    }
+                } catch(e) {}
+            }
+            editor.focus();
+            if (!insertRange) {
+                const sel = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(editor);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                insertRange = range;
+            }
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            const frag = document.createDocumentFragment();
+            Array.from(tmp.childNodes).forEach(n => frag.appendChild(n));
+            insertRange.deleteContents();
+            insertRange.insertNode(frag);
+            const finalRange = document.createRange();
+            finalRange.setStartAfter(frag.lastChild || editor);
+            finalRange.collapse(true);
+            const finalSel = window.getSelection();
+            finalSel.removeAllRanges();
+            finalSel.addRange(finalRange);
+            editor.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function saveEditorCursor() {
+            const editor = document.getElementById('richEditor');
+            if (!editor) return;
+            try {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0) {
+                    const r = sel.getRangeAt(0);
+                    if (editor.contains(r.startContainer)) savedEditorRange = r.cloneRange();
+                }
+            } catch(e) {}
+        }
+
+        function bindMediaWrappers(container) {
+            container.querySelectorAll('.media-wrap').forEach(wrapper => {
+                wrapper.style.position = 'relative';
+                if (wrapper.querySelector('.media-delete-btn')) return;
+                const btn = document.createElement('button');
+                btn.className = 'media-delete-btn';
+                btn.type = 'button';
+                btn.innerHTML = '×';
+                btn.title = '删除此图片/视频';
+                btn.onclick = function(e) { e.stopPropagation(); e.preventDefault(); if (confirm('确定删除此图片/视频？')) { wrapper.remove(); markEditorDirty(); } };
+                wrapper.appendChild(btn);
+            });
+        }
+
+        function migrateOldMedia(editor) {
+            editor.querySelectorAll('img, video, iframe').forEach(el => {
+                if (el.closest('.media-wrap')) return;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'media-wrap';
+                wrapper.style.position = 'relative';
+                el.parentNode.insertBefore(wrapper, el);
+                wrapper.appendChild(el);
+                const btn = document.createElement('button');
+                btn.className = 'media-delete-btn';
+                btn.type = 'button';
+                btn.innerHTML = '×';
+                btn.title = '删除此图片/视频';
+                btn.onclick = function(e) { e.stopPropagation(); e.preventDefault(); if (confirm('确定删除此图片/视频？')) { wrapper.remove(); markEditorDirty(); } };
+                wrapper.appendChild(btn);
+            });
+        }
+
+        function insertHeading(tag) {
+            const editor = document.getElementById('richEditor');
+            editor.focus();
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                const node = sel.getRangeAt(0).startContainer;
+                const container = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+                const existing = container && container.closest ? container.closest('h1,h2,h3,h4,h5,h6,p') : null;
+                if (existing && existing.tagName.toLowerCase() === tag) {
+                    // 同类型标题 → 还原为正文
+                    document.execCommand('formatBlock', false, 'p');
+                    return;
+                }
+            }
+            document.execCommand('formatBlock', false, tag);
+        }
+
+        function insertBlockquote() {
+            const editor = document.getElementById('richEditor');
+            editor.focus();
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                const node = sel.getRangeAt(0).startContainer;
+                const container = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+                const existingBlock = container && container.closest ? container.closest('blockquote') : null;
+
+                if (existingBlock) {
+                    // 取消引用块：解包blockquote，保留内容
+                    const parent = existingBlock.parentNode;
+                    while (existingBlock.firstChild) {
+                        parent.insertBefore(existingBlock.firstChild, existingBlock);
+                    }
+                    parent.removeChild(existingBlock);
+                    markEditorDirty();
+                    return;
+                }
+            }
+            document.execCommand('formatBlock', false, 'blockquote');
+        }
+
+        // ===== 文字颜色面板 =====
+        function toggleColorPanel() {
+            saveEditorCursor();
+            const panel = document.getElementById('colorPanel');
+            const highlightPanel = document.getElementById('highlightPanel');
+            highlightPanel.classList.add('hidden');
+            panel.classList.toggle('hidden');
+        }
+
+        function setTextColor(color) {
+            const editor = document.getElementById('richEditor');
+            // 恢复之前保存的选区
+            if (savedEditorRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedEditorRange.cloneRange());
+                savedEditorRange = null;
+            }
+            editor.focus();
+            document.execCommand('foreColor', false, color);
+            document.getElementById('colorPanel').classList.add('hidden');
+            updateEditorStatus();
+            markEditorDirty();
+        }
+
+        // ===== 高亮块面板 =====
+        function toggleHighlightPanel() {
+            saveEditorCursor();
+            const panel = document.getElementById('highlightPanel');
+            const colorPanel = document.getElementById('colorPanel');
+            colorPanel.classList.add('hidden');
+            panel.classList.toggle('hidden');
+        }
+
+        function insertHighlightBlock(type) {
+            const classMap = {
+                'info': 'highlight-info',
+                'success': 'highlight-success',
+                'warning': 'highlight-warning',
+                'danger': 'highlight-danger'
+            };
+            const editor = document.getElementById('richEditor');
+
+            // 恢复之前保存的选区
+            if (savedEditorRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedEditorRange.cloneRange());
+                savedEditorRange = null;
+            }
+            editor.focus();
+
+            const sel = window.getSelection();
+            document.getElementById('highlightPanel').classList.add('hidden');
+
+            // 检查光标是否已在高亮块内
+            if (sel && sel.rangeCount > 0) {
+                const node = sel.getRangeAt(0).startContainer;
+                const container = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+                const existingBlock = container && container.closest ? container.closest('[class*="highlight-"]') : null;
+
+                if (existingBlock) {
+                    const existingClass = existingBlock.className.trim();
+                    const targetClass = classMap[type];
+
+                    if (existingClass === targetClass) {
+                        // 同类型 → 取消高亮：解包div，保留内容
+                        const parent = existingBlock.parentNode;
+                        const nextSibling = existingBlock.nextElementSibling;
+                        while (existingBlock.firstChild) {
+                            parent.insertBefore(existingBlock.firstChild, existingBlock);
+                        }
+                        parent.removeChild(existingBlock);
+                        // 清理紧跟在后面的空行 <p><br></p>
+                        if (nextSibling && nextSibling.tagName === 'P' && nextSibling.innerHTML === '<br>') {
+                            nextSibling.remove();
+                        }
+                    } else {
+                        // 不同类型 → 切换高亮样式
+                        existingBlock.className = targetClass;
+                    }
+                    markEditorDirty();
+                    return;
+                }
+            }
+
+            // 不在高亮块内 → 正常插入
+            if (sel && !sel.isCollapsed && editor.contains(sel.getRangeAt(0).startContainer)) {
+                // 有选中文字 → 包裹成高亮块
+                const range = sel.getRangeAt(0).cloneRange();
+                // 确保选区完整在编辑器内
+                const startInEditor = editor.contains(range.startContainer);
+                const endInEditor = editor.contains(range.endContainer);
+                if (startInEditor && endInEditor) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = classMap[type];
+                    // 把选中内容放进wrapper
+                    try {
+                        range.surroundContents(wrapper);
+                        // 在高亮块后插入空行，方便继续编辑
+                        const br = document.createElement('p');
+                        br.innerHTML = '<br>';
+                        wrapper.parentNode.insertBefore(br, wrapper.nextSibling);
+                    } catch(e) {
+                        // 跨节点选中时 surroundContents 会失败，用替代方案
+                        const selectedHtml = range.toString();
+                        range.deleteContents();
+                        const wrapper = document.createElement('div');
+                        wrapper.className = classMap[type];
+                        wrapper.innerHTML = '<p>' + selectedHtml + '</p>';
+                        range.insertNode(wrapper);
+                        const br = document.createElement('p');
+                        br.innerHTML = '<br>';
+                        wrapper.parentNode.insertBefore(br, wrapper.nextSibling);
+                    }
+                }
+            } else {
+                // 无选中文字 → 插入空白高亮块
+                const html = `<div class="${classMap[type]}"><p>在此输入高亮内容...</p></div><p><br></p>`;
+                insertHTMLAtCursor(html);
+            }
+
+            markEditorDirty();
+        }
+
+        // 点击面板外部关闭
+        document.addEventListener('click', function(e) {
+            const colorPanel = document.getElementById('colorPanel');
+            const highlightPanel = document.getElementById('highlightPanel');
+            const colorBtn = e.target.closest('button[onclick="toggleColorPanel()"]');
+            const highlightBtn = e.target.closest('button[onclick="toggleHighlightPanel()"]');
+            const colorPanelEl = e.target.closest('#colorPanel');
+            const highlightPanelEl = e.target.closest('#highlightPanel');
+
+            if (!colorBtn && !colorPanelEl && colorPanel) {
+                colorPanel.classList.add('hidden');
+            }
+            if (!highlightBtn && !highlightPanelEl && highlightPanel) {
+                highlightPanel.classList.add('hidden');
+            }
+        });
+
+        function markEditorDirty() {
+            editorDirty = true;
+            document.getElementById('contentSaveStatus').textContent = '未保存 *';
+            document.getElementById('contentSaveStatus').style.color = '#faad14';
+        }
+
+        function updateEditorStatus() {
+            const editor = document.getElementById('richEditor');
+            document.getElementById('editorStatus').textContent = `字符数：${editor.innerText.length} · 支持粘贴图片（Ctrl+V）`;
+            updateFontSizeSelect();
+        }
+
+        // 字号选择器跟随光标位置
+        function initFontSizeTracker() {
+            const editor = document.getElementById('richEditor');
+            if (!editor) return;
+            editor.addEventListener('mouseup', updateFontSizeSelect);
+            editor.addEventListener('keyup', updateFontSizeSelect);
+            editor.addEventListener('click', updateFontSizeSelect);
+        }
+
+        function updateFontSizeSelect() {
+            const editor = document.getElementById('richEditor');
+            const sel = window.getSelection();
+            if (!sel || !sel.rangeCount || !editor.contains(sel.getRangeAt(0).startContainer)) return;
+            const node = sel.getRangeAt(0).startContainer;
+            const container = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+            // 向上查找最近的 <font size="..."> 标签
+            const fontTag = container && container.closest ? container.closest('font[size]') : null;
+            const select = document.getElementById('fontSizeSelect');
+            if (fontTag && fontTag.getAttribute('size')) {
+                const size = fontTag.getAttribute('size');
+                select.value = size;
+            } else {
+                select.value = '3'; // 默认正文
+            }
+        }
+
+        async function uploadAndInsert(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+            input.value = '';
+            const editor = document.getElementById('richEditor');
+            try {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0) {
+                    const r = sel.getRangeAt(0);
+                    if (editor.contains(r.startContainer) || editor === r.startContainer)
+                        savedEditorRange = r.cloneRange();
+                }
+            } catch(e) {}
+            const progress = document.getElementById('uploadProgress');
+            progress.style.display = 'block';
+            progress.textContent = `📤 正在上传 ${file.name}，请稍候...`;
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                const result = await response.json();
+                progress.style.display = 'none';
+                if (result.code === 200) {
+                    const url = result.data.url;
+                    const html = result.data.type === 'video'
+                        ? `<div class="media-wrap"><video controls src="${url}"></video></div>`
+                        : `<div class="media-wrap"><img src="${url}" alt="图片"></div>`;
+                    insertHTMLAtCursor(html);
+                    bindMediaWrappers(editor);
+                    markEditorDirty();
+                    showToast('上传成功');
+                } else { alert('上传失败：' + result.msg); }
+            } catch (e) { progress.style.display = 'none'; alert('上传出错，请重试'); }
+        }
+
+        function insertVideoLink() {
+            saveEditorCursor();
+            const url = prompt('请输入视频链接：\n· B站：https://www.bilibili.com/video/BVxxxxxx\n· 直链MP4：https://example.com/video.mp4');
+            if (!url) return;
+            document.getElementById('richEditor').focus();
+            const bvMatch = url.match(/video\/(BV[\w]+)/i);
+            const html = bvMatch
+                ? `<div class="media-wrap" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;"><iframe src="//player.bilibili.com/player.html?bvid=${bvMatch[1]}&page=1" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>`
+                : `<div class="media-wrap"><video controls src="${url}"></video></div>`;
+            insertHTMLAtCursor(html);
+            bindMediaWrappers(document.getElementById('richEditor'));
+        }
+
+        function initEditorPaste() {
+            const editor = document.getElementById('richEditor');
+            if (!editor) return;
+            editor.addEventListener('paste', async function(e) {
+                const items = e.clipboardData && e.clipboardData.items;
+                if (!items) return;
+                let imageUrl = null, isGif = false;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type === 'text/uri-list' || items[i].type === 'text/plain') {
+                        try {
+                            const url = await new Promise(resolve => items[i].getAsString ? items[i].getAsString(s => resolve(s)) : resolve(null));
+                            if (url && (url.includes('.gif') || url.includes('gif?'))) { imageUrl = url.split('\n')[0]; isGif = true; }
+                        } catch(err) {}
+                        break;
+                    }
+                }
+                if (isGif && imageUrl) {
+                    e.preventDefault();
+                    const progress = document.getElementById('uploadProgress');
+                    progress.style.display = 'block';
+                    progress.textContent = '📤 正在下载GIF动图...';
+                    try {
+                        const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(imageUrl)}`);
+                        if (response.ok) {
+                            const formData = new FormData();
+                            formData.append('file', await response.blob(), 'pasted.gif');
+                            progress.textContent = '📤 正在上传GIF动图...';
+                            const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+                            const result = await uploadRes.json();
+                            progress.style.display = 'none';
+                            if (result.code === 200) {
+                                insertHTMLAtCursor(`<div class="media-wrap"><img src="${result.data.url}" alt="动图"></div>`);
+                                bindMediaWrappers(editor);
+                                showToast('GIF动图上传成功 ✅');
+                                return;
+                            }
+                        }
+                    } catch(err) { progress.style.display = 'none'; }
+                }
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        e.preventDefault();
+                        const file = items[i].getAsFile();
+                        if (!file) continue;
+                        const progress = document.getElementById('uploadProgress');
+                        progress.style.display = 'block';
+                        progress.textContent = '📤 正在上传粘贴的图片...';
+                        const formData = new FormData();
+                        let ext = 'png';
+                        if (file.type === 'image/gif') ext = 'gif';
+                        else if (file.type === 'image/webp') ext = 'webp';
+                        else if (file.type === 'image/jpeg' || file.type === 'image/jpg') ext = 'jpg';
+                        formData.append('file', file, `paste-image.${ext}`);
+                        try {
+                            const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                            const result = await response.json();
+                            progress.style.display = 'none';
+                            if (result.code === 200) {
+                                insertHTMLAtCursor(`<div class="media-wrap"><img src="${result.data.url}" alt="图片"></div>`);
+                                bindMediaWrappers(editor);
+                            }
+                        } catch(err) { progress.style.display = 'none'; }
+                        break;
+                    }
+                }
+            });
+        }
+
+        function initMediaClickHandler() {
+            const editor = document.getElementById('richEditor');
+            if (!editor) return;
+            bindMediaWrappers(editor);
+            editor.addEventListener('blur', function() {
+                try {
+                    const sel = window.getSelection();
+                    if (sel && sel.rangeCount > 0) {
+                        const r = sel.getRangeAt(0);
+                        if (editor.contains(r.startContainer) || editor === r.startContainer)
+                            savedEditorRange = r.cloneRange();
+                    }
+                } catch(e) {}
+            }, true);
+            new MutationObserver(() => bindMediaWrappers(editor)).observe(editor, { childList: true, subtree: true });
+        }
+
+        async function saveRichContent() {
+            const courseId = document.getElementById('detailCourseId').value;
+            const html = document.getElementById('richEditor').innerHTML;
+            const btn = document.getElementById('saveContentBtn');
+            btn.disabled = true; btn.textContent = '保存中...';
+            try {
+                const response = await fetch(`/api/courses/${courseId}/rich-content`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rich_content: html })
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    editorDirty = false;
+                    document.getElementById('contentSaveStatus').textContent = '已保存 ✓';
+                    document.getElementById('contentSaveStatus').style.color = '#52c41a';
+                    showToast('学习内容已保存');
+                } else { alert('保存失败：' + result.msg); }
+            } catch(e) { alert('保存出错，请重试'); }
+            finally { btn.disabled = false; btn.textContent = '💾 保存学习内容'; }
+        }
+
+        // ==================== 登录相关 ====================
+        async function checkLogin() {
+            try {
+                const response = await fetch('/api/admin/check');
+                const result = await response.json();
+                if (result.logged_in) {
+                    currentAdminRole = result.role || 'super_admin';
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('adminPage').classList.remove('hidden');
+                    if (currentAdminRole === 'super_admin') {
+                        document.getElementById('navAdmins').style.display = 'flex';
+                    } else {
+                        document.getElementById('navAdmins').style.display = 'none';
+                    }
+                    loadCourses();
+                }
+            } catch (error) { console.error('检查登录失败', error); }
+        }
+
+        async function doLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if (!username || !password) { alert('请输入用户名和密码'); return; }
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    currentAdminRole = result.data.role || 'super_admin';
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('adminPage').classList.remove('hidden');
+                    if (currentAdminRole === 'super_admin') {
+                        document.getElementById('navAdmins').style.display = 'flex';
+                    }
+                    loadCourses();
+                    showToast('登录成功');
+                } else { alert(result.msg); }
+            } catch (error) { alert('登录失败，请重试'); }
+        }
+
+        function showPage(page) {
+            currentPage = page;
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const labels = { courses: '课程管理', scores: '成绩管理', qrcode: '入口二维码', admins: '管理员账号', settings: '系统设置' };
+            document.querySelectorAll('.nav-item').forEach(el => {
+                if (el.textContent.includes(labels[page])) el.classList.add('active');
+            });
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            const pageEl = document.getElementById(`page${page.charAt(0).toUpperCase() + page.slice(1)}`);
+            if (pageEl) pageEl.classList.remove('hidden');
+            if (page === 'scores') loadCoursesForScores();
+            if (page === 'qrcode') loadQRCodes();
+            if (page === 'admins') loadAdmins();
+        }
+
+        // ==================== 课程管理（含拖拽排序）====================
+        async function loadCourses() {
+            try {
+                const response = await fetch('/api/courses');
+                const result = await response.json();
+                if (result.code === 200) { courses = result.data; renderCourseList(); }
+            } catch (error) { console.error('加载课程失败', error); }
+        }
+
+        function renderCourseList() {
+            const container = document.getElementById('courseList');
+            if (courses.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">📚</div><div>暂无课程，点击上方按钮添加</div></div>`;
+                return;
+            }
+            let html = `<div id="sortTip" class="sort-save-bar" style="display:none;">
+                <span>⚠️ 课程顺序已调整，请点击保存</span>
+                <button class="btn btn-add" onclick="saveCourseOrder()">💾 保存顺序</button>
+            </div>`;
+            html += courses.map((c, i) => `
+                <div class="course-item" draggable="true"
+                     data-id="${c.id}"
+                     ondragstart="onCourseDragStart(event, ${c.id})"
+                     ondragover="onCourseDragOver(event)"
+                     ondrop="onCourseDrop(event, ${c.id}, ${i})">
+                    <div class="drag-handle">⠿</div>
+                    <div class="course-info">
+                        <strong>${escapeHtml(c.title)}</strong>
+                        <span>${c.question_count || 0}题 · ${c.passing_score || 80}分</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-edit" onclick="event.stopPropagation(); showCourseDetail(${c.id})">内容管理</button>
+                        <button class="btn btn-edit" onclick="event.stopPropagation(); editCourse(${c.id})">编辑</button>
+                        ${currentAdminRole === 'super_admin' ? `<button class="btn btn-delete" onclick="event.stopPropagation(); deleteCourse(${c.id})">删除</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            container.innerHTML = html;
+        }
+
+        let draggedCourseId = null;
+        function onCourseDragStart(e, id) {
+            draggedCourseId = id;
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.classList.add('dragging');
+        }
+        function onCourseDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+        function onCourseDrop(e, targetId, targetIndex) {
+            e.preventDefault();
+            document.querySelectorAll('.course-item').forEach(el => el.classList.remove('dragging'));
+            if (!draggedCourseId || draggedCourseId === targetId) return;
+            const draggedIdx = courses.findIndex(c => c.id === draggedCourseId);
+            if (draggedIdx < 0) return;
+            const [item] = courses.splice(draggedIdx, 1);
+            courses.splice(targetIndex, 0, item);
+            renderCourseList();
+            document.getElementById('sortTip').style.display = 'flex';
+        }
+
+        async function saveCourseOrder() {
+            const courseOrders = courses.map((c, i) => ({ id: c.id, sort_order: i }));
+            try {
+                const response = await fetch('/api/courses/reorder', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ course_orders: courseOrders })
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    document.getElementById('sortTip').style.display = 'none';
+                    showToast('课程顺序已保存');
+                } else { alert(result.msg || '保存失败'); }
+            } catch (e) { alert('保存顺序失败'); }
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return escapeHtml(text).replace(/"/g, '&quot;');
+        }
+
+        function escapeJsArg(text) {
+            return escapeAttr(JSON.stringify(text == null ? '' : String(text)));
+        }
+
+        function showCourseModal(id = null) {
+            document.getElementById('courseModalTitle').textContent = id ? '编辑课程' : '添加课程';
+            document.getElementById('courseId').value = id || '';
+            if (id) {
+                const course = courses.find(c => c.id === id);
+                document.getElementById('courseTitle').value = course.title;
+                document.getElementById('courseDescription').value = course.description || '';
+                document.getElementById('courseCover').value = course.cover_image || '';
+                document.getElementById('coursePassingScore').value = course.passing_score;
+            } else {
+                document.getElementById('courseTitle').value = '';
+                document.getElementById('courseDescription').value = '';
+                document.getElementById('courseCover').value = '';
+                document.getElementById('coursePassingScore').value = '80';
+            }
+            document.getElementById('courseModal').classList.remove('hidden');
+        }
+
+        async function saveCourse() {
+            const id = document.getElementById('courseId').value;
+            const data = {
+                title: document.getElementById('courseTitle').value.trim(),
+                description: document.getElementById('courseDescription').value.trim(),
+                cover_image: document.getElementById('courseCover').value.trim(),
+                passing_score: parseInt(document.getElementById('coursePassingScore').value) || 80
+            };
+            if (!data.title) { alert('请输入课程名称'); return; }
+            try {
+                const url = id ? `/api/courses/${id}` : '/api/courses';
+                const method = id ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.code === 200) { closeModal('courseModal'); loadCourses(); showToast(id ? '更新成功' : '添加成功'); }
+            } catch (error) { alert('保存失败，请重试'); }
+        }
+
+        async function deleteCourse(id) {
+            if (!confirm('确定要删除这个课程吗？删除后无法恢复！')) return;
+            try {
+                const response = await fetch(`/api/courses/${id}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.code === 200) { loadCourses(); showToast('删除成功'); }
+                else if (result.code === 403) { alert('仅超级管理员可删除课程'); }
+                else { alert(result.msg || '删除失败'); }
+            } catch (error) { alert('删除失败，请重试'); }
+        }
+
+        async function showCourseDetail(courseId) {
+            currentCourseId = courseId;
+            editorDirty = false;
+            document.getElementById('contentSaveStatus').textContent = '';
+            try {
+                const courseRes = await fetch(`/api/courses/${courseId}`);
+                const courseResult = await courseRes.json();
+                if (courseResult.code === 200) {
+                    const course = courseResult.data;
+                    document.getElementById('detailCourseId').value = courseId;
+                    document.getElementById('courseDetailTitle').textContent = `内容管理 - ${course.title}`;
+                    await loadRichContent(courseId);
+                    await loadQuestions(courseId);
+                    document.getElementById('courseDetailModal').classList.remove('hidden');
+                }
+            } catch (error) { alert('加载失败，请重试'); }
+        }
+
+        async function loadRichContent(courseId) {
+            try {
+                const response = await fetch(`/api/courses/${courseId}/rich-content`);
+                const result = await response.json();
+                const editor = document.getElementById('richEditor');
+                if (result.code === 200 && result.data.rich_content) {
+                    editor.innerHTML = result.data.rich_content;
+                } else {
+                    const modRes = await fetch(`/api/courses/${courseId}/modules`);
+                    const modResult = await modRes.json();
+                    if (modResult.code === 200 && modResult.data.length > 0) {
+                        let html = '';
+                        for (const m of modResult.data) {
+                            if (m.type === 'text') html += `<h2>${m.title}</h2>` + m.content.split('\n').map(l => `<p>${l}</p>`).join('');
+                            else if (m.type === 'html') html += m.content;
+                            else if (m.type === 'image' || m.type === 'gif') html += `<h2>${m.title}</h2><div class="media-wrap"><img src="${m.content}" alt="${m.title}"></div>`;
+                            else if (m.type === 'video') {
+                                const bv = (m.content.match(/video\/(BV[\w]+)/i) || [])[1];
+                                html += `<h2>${m.title}</h2>` + (bv
+                                    ? `<div class="media-wrap" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;"><iframe src="//player.bilibili.com/player.html?bvid=${bv}&page=1" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>`
+                                    : `<div class="media-wrap"><video controls src="${m.content}"></video></div>`);
+                            }
+                        }
+                        editor.innerHTML = html || '<p>在这里开始编辑课程内容...</p>';
+                    } else { editor.innerHTML = '<p>在这里开始编辑课程内容...</p>'; }
+                }
+                editor.querySelectorAll('.media-delete-btn').forEach(btn => btn.remove());
+                migrateOldMedia(editor);
+                editor.querySelectorAll('.media-wrap').forEach(wrapper => {
+                    wrapper.style.position = 'relative';
+                    const btn = document.createElement('button');
+                    btn.className = 'media-delete-btn'; btn.type = 'button'; btn.innerHTML = '×';
+                    btn.title = '删除此图片/视频';
+                    btn.onclick = function(e) { e.stopPropagation(); e.preventDefault(); if (confirm('确定删除此图片/视频？')) { wrapper.remove(); markEditorDirty(); } };
+                    wrapper.appendChild(btn);
+                });
+                updateEditorStatus();
+            } catch(e) { document.getElementById('richEditor').innerHTML = '<p>加载失败，请重试</p>'; }
+        }
+
+        // ==================== 题目管理（支持单选/多选）====================
+        async function loadQuestions(courseId) {
+            try {
+                const response = await fetch(`/api/courses/${courseId}/questions`);
+                const result = await response.json();
+                const container = document.getElementById('questionList');
+                if (result.code === 200 && result.data.length > 0) {
+                    container.innerHTML = result.data.map((q, i) => {
+                        const correctAnswers = Array.isArray(q.answer) ? q.answer : [q.answer];
+                        const optionsHtml = q.options.map((opt, idx) => {
+                            const isCorrect = correctAnswers.includes(idx);
+                            return `<div style="padding:8px 12px;background:${isCorrect ? '#f6ffed' : '#fafafa'};border-radius:6px;margin-bottom:5px;${isCorrect ? 'border:1px solid #52c41a;' : ''}"><strong>${String.fromCharCode(65 + idx)}.</strong> ${escapeHtml(opt)} ${isCorrect ? '✓ 正确答案' : ''}</div>`;
+                        }).join('');
+                        const typeBadge = q.question_type === 'multiple'
+                            ? '<span class="q-type-badge multiple">多选</span>'
+                            : '<span class="q-type-badge single">单选</span>';
+                        return `<div class="question-editor"><span class="question-num">第${i + 1}题 ${typeBadge}</span><div style="margin-bottom:10px;font-size:15px;">${escapeHtml(q.question)}</div><div style="margin-bottom:10px;">${optionsHtml}</div><div class="actions"><button class="btn btn-edit" onclick="editQuestion(${q.id})">编辑</button><button class="btn btn-delete" onclick="deleteQuestion(${q.id})">删除</button></div></div>`;
+                    }).join('');
+                } else { container.innerHTML = '<div class="empty-state"><div class="icon">❓</div><div>暂无题目，点击上方按钮添加</div></div>'; }
+            } catch (error) { console.error('加载题目失败', error); }
+        }
+
+        function showQuestionModal(questionId = null) {
+            document.getElementById('questionCourseId').value = currentCourseId;
+            document.getElementById('questionId').value = questionId || '';
+            document.getElementById('questionModalTitle').textContent = questionId ? '编辑题目' : '添加题目';
+            document.getElementById('questionText').value = '';
+            ['option0','option1','option2','option3'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('qTypeSingle').checked = true;
+            renderQuestionTypeOptions();
+            document.getElementById('questionModal').classList.remove('hidden');
+        }
+
+        function renderQuestionTypeOptions() {
+            const isMultiple = document.getElementById('qTypeMultiple').checked;
+            const container = document.getElementById('correctOptionsContainer');
+            container.innerHTML = '';
+            ['A', 'B', 'C', 'D'].forEach((label, i) => {
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;';
+                const input = document.createElement('input');
+                input.type = isMultiple ? 'checkbox' : 'radio';
+                input.name = isMultiple ? `correct_${i}` : 'correctOption';
+                input.value = i;
+                input.className = 'correct-opt-input';
+                input.style.accentColor = '#52c41a';
+                const span = document.createElement('span');
+                span.textContent = `${label}（勾选表示正确答案）`;
+                span.style.cssText = 'font-size:13px;color:#666;';
+                wrapper.appendChild(input);
+                wrapper.appendChild(span);
+                container.appendChild(wrapper);
+            });
+        }
+
+        async function editQuestion(questionId) {
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/questions`);
+                const result = await response.json();
+                if (result.code === 200) {
+                    const q = result.data.find(q => q.id === questionId);
+                    if (q) {
+                        document.getElementById('questionCourseId').value = currentCourseId;
+                        document.getElementById('questionId').value = questionId;
+                        document.getElementById('questionModalTitle').textContent = '编辑题目';
+                        document.getElementById('questionText').value = q.question;
+                        if (q.question_type === 'multiple') document.getElementById('qTypeMultiple').checked = true;
+                        else document.getElementById('qTypeSingle').checked = true;
+                        renderQuestionTypeOptions();
+                        q.options.forEach((opt, idx) => {
+                            const el = document.getElementById(`option${idx}`);
+                            if (el) el.value = opt;
+                        });
+                        const correctAnswers = Array.isArray(q.answer) ? q.answer : [q.answer];
+                        setTimeout(() => {
+                            document.querySelectorAll('.correct-opt-input').forEach(cb => {
+                                cb.checked = correctAnswers.includes(parseInt(cb.value));
+                            });
+                        }, 0);
+                        document.getElementById('questionModal').classList.remove('hidden');
+                    }
+                }
+            } catch (error) { alert('加载失败'); }
+        }
+
+        async function saveQuestion() {
+            const id = document.getElementById('questionId').value;
+            const courseId = document.getElementById('questionCourseId').value;
+            const question = document.getElementById('questionText').value.trim();
+            const options = ['option0','option1','option2','option3'].map(o => document.getElementById(o).value.trim()).filter(o => o);
+            const isMultiple = document.getElementById('qTypeMultiple').checked;
+            if (!question) { alert('请输入题目内容'); return; }
+            if (options.length < 2) { alert('请至少输入2个选项'); return; }
+            const checked = Array.from(document.querySelectorAll('.correct-opt-input:checked'));
+            if (checked.length === 0) { alert('请勾选至少一个正确答案'); return; }
+            const answer = Array.from(checked).map(el => parseInt(el.value));
+            const data = { question, options, question_type: isMultiple ? 'multiple' : 'single', answer: isMultiple ? answer : answer[0] };
+            try {
+                const url = id ? `/api/questions/${id}` : `/api/courses/${courseId}/questions`;
+                const method = id ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.code === 200) { closeModal('questionModal'); loadQuestions(currentCourseId); showToast(id ? '更新成功' : '添加成功'); }
+            } catch (error) { alert('保存失败'); }
+        }
+
+        async function deleteQuestion(questionId) {
+            if (!confirm('确定要删除吗？')) return;
+            try {
+                const response = await fetch(`/api/questions/${questionId}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.code === 200) { loadQuestions(currentCourseId); showToast('删除成功'); }
+            } catch (error) { alert('删除失败'); }
+        }
+
+        // ==================== 成绩管理 ====================
+        async function loadCoursesForScores() {
+            const select = document.getElementById('scoreCourseSelect');
+            select.innerHTML = '<option value="">请选择课程</option>' + courses.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('');
+        }
+
+        async function loadScores() {
+            const courseId = document.getElementById('scoreCourseSelect').value;
+            const container = document.getElementById('scoreList');
+            const actions = document.getElementById('scoreActions');
+            if (!courseId) { container.innerHTML = '<div class="empty-state">请选择课程</div>'; actions.classList.add('hidden'); return; }
+            actions.classList.remove('hidden');
+            container.innerHTML = '<div class="empty-state">加载中...</div>';
+            try {
+                const response = await fetch(`/api/courses/${courseId}/scores`);
+                const result = await response.json();
+                if (result.code === 200) {
+                    if (result.data.length === 0) { container.innerHTML = '<div class="empty-state">暂无成绩记录</div>'; return; }
+                    container.innerHTML = `<table class="table"><thead><tr><th>姓名</th><th>运营城市</th><th>车牌号</th><th>联系电话</th><th>得分</th><th>正确</th><th>考试时间</th></tr></thead><tbody>${result.data.map(s => `<tr><td>${escapeHtml(s.driver_name)}</td><td>${escapeHtml(s.driver_city || '-')}</td><td>${escapeHtml(s.driver_plate || '-')}</td><td>${escapeHtml(s.driver_phone || '-')}</td><td><strong style="color:${s.score >= 80 ? '#52c41a' : '#ff4d4f'}">${s.score}分</strong></td><td>${s.correct_count}/${s.total_questions}</td><td>${new Date(s.created_at).toLocaleString()}</td></tr>`).join('')}</tbody></table>`;
+                }
+            } catch (error) { container.innerHTML = '<div class="empty-state">加载失败</div>'; }
+        }
+
+        function exportScores() {
+            const courseId = document.getElementById('scoreCourseSelect').value;
+            if (courseId) window.location.href = `/api/courses/${courseId}/scores/export`;
+        }
+
+        // ==================== 二维码 ====================
+        async function loadQRCodes() {
+            const container = document.getElementById('qrcodeList');
+            if (courses.length === 0) { container.innerHTML = '<div class="empty-state">暂无课程</div>'; return; }
+            container.innerHTML = courses.map(c => {
+                const url = `${serverBaseUrl}/course/${c.id}`;
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+                return `<div style="display:inline-block;margin:15px;text-align:center;"><div class="qr-code"><img src="${qrUrl}" alt="${escapeAttr(c.title)}" style="width:180px;height:180px;"><div style="margin-top:10px;font-weight:600;font-size:15px;">${escapeHtml(c.title)}</div></div><div class="qr-url">${escapeHtml(url)}</div><div style="margin-top:8px;"><button class="btn btn-edit" style="font-size:12px;" onclick="window.open('${escapeAttr(url)}')">🔗 直接打开</button></div></div>`;
+            }).join('');
+        }
+
+        // ==================== 系统设置 ====================
+        async function changePassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            if (!oldPassword || !newPassword) { alert('请填写完整'); return; }
+            if (newPassword.length < 6) { alert('新密码至少6位'); return; }
+            try {
+                const response = await fetch('/api/admin/password', {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+                });
+                const result = await response.json();
+                if (result.code === 200) { alert('密码修改成功'); document.getElementById('oldPassword').value = ''; document.getElementById('newPassword').value = ''; }
+                else { alert(result.msg); }
+            } catch (error) { alert('修改失败'); }
+        }
+
+        // ==================== 管理员账号管理（仅超级管理员）====================
+        async function loadAdmins() {
+            console.log('[loadAdmins] 开始加载管理员列表');
+            try {
+                const response = await fetch('/api/admin/accounts');
+                console.log('[loadAdmins] HTTP状态:', response.status);
+                const result = await response.json();
+                console.log('[loadAdmins] 响应数据:', result);
+                if (result.code !== 200) { alert(result.msg || '加载失败'); return; }
+                const container = document.getElementById('adminList');
+                if (!container) { console.error('[loadAdmins] 找不到adminList元素'); return; }
+                if (result.data.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="icon">🛡️</div><div>暂无管理员账号</div></div>';
+                    return;
+                }
+                container.innerHTML = `<table class="table"><thead><tr><th>用户名</th><th>角色</th><th>创建时间</th><th>操作</th></tr></thead><tbody>${result.data.map(a => `<tr><td><strong>${escapeHtml(a.username)}</strong></td><td><span class="admin-role-badge ${escapeAttr(a.role)}">${a.role === 'super_admin' ? '超级管理员' : '普通管理员'}</span></td><td style="font-size:12px;color:#999;">${new Date(a.created_at).toLocaleString()}</td><td class="actions"><button class="btn btn-edit" onclick="editAdmin(${a.id}, ${escapeJsArg(a.username)}, '${escapeAttr(a.role)}')">编辑</button><button class="btn btn-delete" onclick="deleteAdmin(${a.id}, ${escapeJsArg(a.username)})">删除</button></td></tr>`).join('')}</tbody></table>`;
+                console.log('[loadAdmins] 渲染完成，共', result.data.length, '条记录');
+            } catch (error) { console.error('[loadAdmins] 加载失败:', error); alert('加载管理员列表失败: ' + error.message); }
+        }
+
+        function showAddAdminModal() {
+            document.getElementById('adminModalTitle').textContent = '添加管理员';
+            document.getElementById('adminAccountId').value = '';
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPassword').placeholder = '请输入密码（至少6位）';
+            document.getElementById('adminRole').value = 'normal_admin';
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function editAdmin(id, username, role) {
+            document.getElementById('adminModalTitle').textContent = '编辑管理员';
+            document.getElementById('adminAccountId').value = id;
+            document.getElementById('adminUsername').value = username;
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPassword').placeholder = '留空则不修改密码';
+            document.getElementById('adminRole').value = role;
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        async function saveAdmin() {
+            const id = document.getElementById('adminAccountId').value;
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const role = document.getElementById('adminRole').value;
+            if (!username) { alert('请输入用户名'); return; }
+            if (!id && !password) { alert('请输入密码'); return; }
+            if (password && password.length < 6) { alert('密码至少6位'); return; }
+            const data = { username, role };
+            if (password) data.password = password;
+            try {
+                const url = id ? `/api/admin/accounts/${id}` : '/api/admin/accounts';
+                const method = id ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.code === 200) { closeModal('adminModal'); loadAdmins(); showToast(id ? '更新成功' : '添加成功'); }
+                else { alert(result.msg); }
+            } catch (error) { alert('保存失败'); }
+        }
+
+        async function deleteAdmin(id, username) {
+            if (!confirm(`确定要删除管理员「${username}」吗？`)) return;
+            try {
+                const response = await fetch(`/api/admin/accounts/${id}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.code === 200) { loadAdmins(); showToast('删除成功'); }
+                else { alert(result.msg); }
+            } catch (error) { alert('删除失败'); }
+        }
+
+        // ==================== 工具函数 ====================
+        function closeModal(modalId) {
+            if (modalId === 'courseDetailModal' && editorDirty) {
+                if (!confirm('学习内容有未保存的更改，确定要关闭吗？')) return;
+            }
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.background = type === 'error' ? '#EF4444' : '#2563EB';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        function editCourse(id) { showCourseModal(id); }
+
+        init();
+    </script>
+</body>
+</html>

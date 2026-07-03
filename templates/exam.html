@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>在线考试</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #2563EB;
+            --primary-light: #3B82F6;
+            --primary-lighter: #60A5FA;
+            --primary-bg: #EFF6FF;
+            --primary-subtle: #DBEAFE;
+            --bg: #FFFFFF;
+            --bg-secondary: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --text-tertiary: #94A3B8;
+            --border: #E2E8F0;
+            --border-light: #F1F5F9;
+            --success: #10B981;
+            --danger: #EF4444;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'PingFang SC', sans-serif;
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 16px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .back-btn:hover {
+            background: var(--primary-bg);
+            border-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+        .header h1 {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .progress-bar {
+            background: var(--border-light);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        .progress-fill {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .content {
+            padding: 20px 16px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .question-number {
+            display: inline-block;
+            background: var(--primary-bg);
+            color: var(--primary);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            border: 1px solid var(--primary-subtle);
+        }
+        .question-text {
+            font-size: 18px;
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option:hover {
+            border-color: var(--primary-lighter);
+            background: var(--primary-bg);
+        }
+        .option.selected {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+            box-shadow: 0 0 0 1px var(--primary-subtle);
+        }
+        .option-radio {
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 0.2s;
+        }
+        .option.selected .option-radio {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+        .option.selected .option-radio::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #FFFFFF;
+            border-radius: 50%;
+        }
+        .option-text {
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        /* 多选题：方形勾选样式 */
+        .option-checkbox {
+            border-radius: 4px !important;
+        }
+        .option-checkbox::after {
+            content: '✓' !important;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: 700;
+            width: auto !important;
+            height: auto !important;
+            background: none !important;
+            border-radius: 0 !important;
+        }
+        .option.selected .option-checkbox {
+            border-color: #16A34A !important;
+            background: #16A34A !important;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: all 0.2s;
+        }
+        .btn-submit:hover {
+            background: #1D4ED8;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-submit:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ===== Result Modal ===== */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .result-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px 28px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-icon {
+            font-size: 56px;
+            margin-bottom: 14px;
+        }
+        .result-score {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .result-score.pass {
+            color: var(--success);
+        }
+        .result-score.fail {
+            color: var(--danger);
+        }
+        .result-text {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        .result-detail {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-around;
+            border: 1px solid var(--border-light);
+        }
+        .result-detail-item {
+            text-align: center;
+        }
+        .result-detail-item .number {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .result-detail-item .label {
+            font-size: 15px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        .btn-back {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-back:hover {
+            background: #1D4ED8;
+            box-shadow: var(--shadow-md);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-tertiary);
+            font-size: 14px;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.7s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <button class="back-btn" onclick="history.back()">←</button>
+            <h1 id="examTitle">在线考试</h1>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">0 / 0 已答</div>
+    </div>
+
+    <div class="content">
+        <div id="questionList">
+            <div class="loading">加载题目中</div>
+        </div>
+        <button class="btn-submit" id="submitBtn" onclick="submitExam()" disabled>
+            提交试卷
+        </button>
+    </div>
+
+    <script>
+        (function() {
+            var courseId = parseInt(window.location.pathname.split('/').pop());
+            var driverName = sessionStorage.getItem('examDriverName') || '未知';
+            var driverCity = sessionStorage.getItem('examDriverCity') || '';
+            var driverPlate = sessionStorage.getItem('examDriverPlate') || '';
+            var questions = [];
+            var answers = {};
+            var courseTitle = '';
+            var passingScore = 80;
+            var API_BASE = '';
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text == null ? '' : String(text);
+                return div.innerHTML;
+            }
+
+            async function init() {
+                await Promise.all([loadCourseInfo(), loadQuestions()]);
+            }
+
+            async function loadCourseInfo() {
+                try {
+                    var response = await fetch(API_BASE + '/api/courses/' + courseId);
+                    var result = await response.json();
+                    if (result.code === 200) {
+                        courseTitle = result.data.title;
+                        passingScore = result.data.passing_score;
+                        document.getElementById('examTitle').textContent = courseTitle + ' - 在线考试';
+                    }
+                } catch (_err) { /* silent */ }
+            }
+
+            async function loadQuestions() {
+                var container = document.getElementById('questionList');
+                try {
+                    var response = await fetch(API_BASE + '/api/courses/' + courseId + '/exam');
+                    var result = await response.json();
+                    if (result.code === 200) {
+                        questions = result.data;
+                        renderQuestions();
+                    } else {
+                        container.innerHTML = '<div class="loading">加载失败，请刷新重试</div>';
+                    }
+                } catch (_err) {
+                    container.innerHTML = '<div class="loading">网络错误，请刷新重试</div>';
+                }
+            }
+
+            function renderQuestions() {
+                var container = document.getElementById('questionList');
+                if (questions.length === 0) {
+                    container.innerHTML = '<div class="loading">暂无题目</div>';
+                    return;
+                }
+	                container.innerHTML = questions.map(function(q, index) {
+                    var isMulti = q.question_type === 'multiple';
+                    var typeBadge = isMulti
+                        ? '<span style="display:inline-block;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:600;background:rgba(34,197,94,0.1);color:#16A34A;margin-left:6px;">多选</span>'
+                        : '<span style="display:inline-block;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:600;background:var(--primary-bg);color:var(--primary);margin-left:6px;">单选</span>';
+                    var optionsHtml = q.options.map(function(opt, optIndex) {
+                        return (
+                            '<div class="option' + (isMulti ? ' option-multi' : '') + '" data-qid="' + q.id + '" data-opt="' + optIndex + '" onclick="selectAnswer(' + q.id + ', ' + optIndex + ')">' +
+                            '<div class="option-radio' + (isMulti ? ' option-checkbox' : '') + '"></div>' +
+	                            '<div class="option-text">' + escapeHtml(opt) + '</div></div>'
+	                        );
+	                    }).join('');
+
+                    return (
+                        '<div class="question-card" id="question-' + q.id + '">' +
+                        '<span class="question-number">' + (index + 1) + ' / ' + questions.length + typeBadge + '</span>' +
+	                        '<div class="question-text">' + escapeHtml(q.question) + '</div>' +
+	                        '<div class="options">' + optionsHtml + '</div></div>'
+                    );
+                }).join('');
+                updateProgress();
+            }
+
+            function selectAnswer(questionId, optionIndex) {
+                var q = questions.find(function(q) { return q.id === questionId; });
+                if (!q) return;
+                var isMulti = q.question_type === 'multiple';
+
+                if (isMulti) {
+                    // 多选题：切换选中/取消
+                    var current = answers[questionId] || [];
+                    var idx = current.indexOf(optionIndex);
+                    if (idx >= 0) {
+                        current.splice(idx, 1);
+                        if (current.length === 0) delete answers[questionId];
+                        else answers[questionId] = current;
+                    } else {
+                        answers[questionId] = (current || []).concat([optionIndex]);
+                    }
+                } else {
+                    // 单选题：替换选中项
+                    answers[questionId] = optionIndex;
+                }
+
+                var card = document.getElementById('question-' + questionId);
+                card.querySelectorAll('.option').forEach(function(opt, idx) {
+                    if (isMulti) {
+                        var selected = answers[questionId] || [];
+                        opt.classList.toggle('selected', selected.indexOf(idx) >= 0);
+                    } else {
+                        opt.classList.toggle('selected', idx === optionIndex);
+                    }
+                });
+                updateProgress();
+                checkCanSubmit();
+            }
+
+            function updateProgress() {
+                var total = questions.length;
+                var answered = Object.keys(answers).length;
+                var percent = total > 0 ? (answered / total) * 100 : 0;
+                document.getElementById('progressFill').style.width = percent + '%';
+                document.getElementById('progressText').textContent = answered + ' / ' + total + ' 已答';
+            }
+
+            function checkCanSubmit() {
+                var total = questions.length;
+                var answered = Object.keys(answers).length;
+                var btn = document.getElementById('submitBtn');
+                btn.disabled = answered < total;
+                btn.textContent = answered < total
+                    ? '还有 ' + (total - answered) + ' 题未完成'
+                    : '提交试卷';
+            }
+
+            async function submitExam() {
+                var submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '提交中...';
+
+                try {
+                    var answerList = questions.map(function(q) {
+                        return { question_id: q.id, selected: answers[q.id] };
+                    });
+
+	                    var scoreResponse = await fetch(API_BASE + '/api/courses/' + courseId + '/scores', {
+	                        method: 'POST',
+	                        headers: { 'Content-Type': 'application/json' },
+	                        body: JSON.stringify({
+	                            driver_name: driverName,
+	                            driver_city: driverCity,
+	                            driver_plate: driverPlate,
+	                            answers: answerList
+	                        })
+	                    });
+	                    var scoreResult = await scoreResponse.json();
+
+	                    if (scoreResult.code === 200) {
+	                        var data = scoreResult.data;
+	                        showResult(data.score, data.correct_count, data.total);
+	                    } else {
+	                        alert(scoreResult.msg || '提交失败，请重试');
+	                        submitBtn.disabled = false;
+	                        submitBtn.textContent = '提交试卷';
+	                    }
+                } catch (_err) {
+                    alert('提交失败，请重试');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '提交试卷';
+                }
+            }
+
+            function showResult(score, correct, total) {
+                var isPass = score >= passingScore;
+                var modal = document.createElement('div');
+                modal.className = 'result-modal';
+                modal.innerHTML =
+                    '<div class="result-card">' +
+                    '<div class="result-icon">' + (isPass ? '🎉' : '😔') + '</div>' +
+                    '<div class="result-score ' + (isPass ? 'pass' : 'fail') + '">' + score + '分</div>' +
+                    '<div class="result-text">' + (isPass ? '恭喜您通过考试！' : '很遗憾，未通过考试') + '</div>' +
+                    '<div class="result-detail">' +
+                    '<div class="result-detail-item"><div class="number">' + correct + '</div><div class="label">正确</div></div>' +
+                    '<div class="result-detail-item"><div class="number">' + (total - correct) + '</div><div class="label">错误</div></div>' +
+                    '<div class="result-detail-item"><div class="number">' + total + '</div><div class="label">总题数</div></div>' +
+                    '</div>' +
+                    '<button class="btn-back" onclick="goBack()">返回课程列表</button></div>';
+                document.body.appendChild(modal);
+            }
+
+            function goBack() {
+                window.location.href = '/';
+            }
+
+            window.selectAnswer = selectAnswer;
+            window.submitExam = submitExam;
+            window.goBack = goBack;
+
+            init();
+        })();
+    </script>
+</body>
+</html>

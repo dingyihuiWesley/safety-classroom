@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+venv/
+*.log
+*.db
+static/uploads/
+*.bak
+*.bak.*
+.env
+.env.*
+instance/

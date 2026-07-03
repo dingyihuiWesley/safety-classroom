@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>轻卡安全大讲堂</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #2563EB;
+            --primary-light: #3B82F6;
+            --primary-lighter: #60A5FA;
+            --primary-bg: #EFF6FF;
+            --primary-subtle: #DBEAFE;
+            --bg: #FFFFFF;
+            --bg-secondary: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --text-tertiary: #94A3B8;
+            --border: #E2E8F0;
+            --border-light: #F1F5F9;
+            --success: #10B981;
+            --danger: #EF4444;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'PingFang SC', sans-serif;
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 16px 48px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0 28px;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 64px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        .header h1 {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        .header h1 .emoji-icon {
+            display: inline-block;
+            font-size: 28px;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        .header p {
+            font-size: 15px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 24px;
+        }
+        .course-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        .course-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-lighter);
+            box-shadow: var(--shadow-lg);
+        }
+        .course-card:active {
+            transform: translateY(-1px);
+        }
+
+        .course-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .course-title .icon {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            flex-shrink: 0;
+            color: var(--primary);
+        }
+        .course-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 14px;
+            padding-left: 52px;
+        }
+        .course-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-light);
+            margin-left: 52px;
+        }
+        .course-info .stat {
+            font-size: 15px;
+            color: var(--text-tertiary);
+        }
+        .course-info .stat strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .course-action {
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.25s;
+        }
+        .course-card:hover .course-action {
+            gap: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+            font-size: 15px;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.7s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            color: var(--text-tertiary);
+            font-size: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="emoji-icon">🚛</span>轻卡安全大讲堂</h1>
+            <p>学习安全驾驶知识 · 提升风险防范意识</p>
+        </div>
+        <div id="courseList" class="course-list">
+            <div class="loading">加载课程中</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const API_BASE = '';
+
+            async function loadCourses() {
+                const container = document.getElementById('courseList');
+                try {
+                    const response = await fetch(API_BASE + '/api/courses');
+                    const result = await response.json();
+
+                    if (result.code === 200 && result.data.length > 0) {
+                        container.innerHTML = result.data.map(function(course) {
+                            return (
+                                '<div class="course-card" onclick="goToCourse(' + course.id + ')">' +
+                                    '<div class="course-title">' +
+                                        '<div class="icon">📚</div>' +
+                                        escapeHtml(course.title) +
+                                    '</div>' +
+                                    '<div class="course-desc">' +
+                                        (course.description ? escapeHtml(course.description) : '暂无课程介绍') +
+                                    '</div>' +
+                                    '<div class="course-info">' +
+                                        '<div class="stat">考试题目：<strong>' + course.question_count + '</strong> 题</div>' +
+                                        '<div class="course-action">开始学习 →</div>' +
+                                    '</div>' +
+                                '</div>'
+                            );
+                        }).join('');
+                    } else {
+                        container.innerHTML = '<div class="empty">暂无课程</div>';
+                    }
+                } catch (_err) {
+                    container.innerHTML = '<div class="empty">加载失败，请刷新重试</div>';
+                }
+            }
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.appendChild(document.createTextNode(text));
+                return div.innerHTML;
+            }
+
+            window.goToCourse = function(courseId) {
+                window.location.href = '/course/' + courseId;
+            };
+
+            loadCourses();
+        })();
+    </script>
+</body>
+</html>
