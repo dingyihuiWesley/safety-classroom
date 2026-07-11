@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>轻卡安全大讲堂</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -32,7 +29,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'PingFang SC', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             background: var(--bg-secondary);
             min-height: 100vh;
             padding: 0;
@@ -206,7 +203,7 @@
 
     <script>
         (function() {
-            const API_BASE = '';
+            const API_BASE = '/classroom';
 
             async function loadCourses() {
                 const container = document.getElementById('courseList');
@@ -247,7 +244,7 @@
             }
 
             window.goToCourse = function(courseId) {
-                window.location.href = '/course/' + courseId;
+                window.location.href = API_BASE + '/course/' + courseId;
             };
 
             loadCourses();

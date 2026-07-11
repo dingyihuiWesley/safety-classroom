@@ -1,0 +1,15 @@
+[Unit]
+Description=轻卡安全大讲堂 (Safety Classroom)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/safety-classroom
+EnvironmentFile=/home/ubuntu/projects/safety-classroom/.env
+ExecStart=/home/ubuntu/projects/safety-classroom/venv/bin/gunicorn -w 2 -b 127.0.0.1:8888 wsgi:app
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>在线考试</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -32,7 +29,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'PingFang SC', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             background: var(--bg-secondary);
             min-height: 100vh;
             color: var(--text-primary);
@@ -385,7 +382,7 @@
             var answers = {};
             var courseTitle = '';
             var passingScore = 80;
-            var API_BASE = '';
+            var API_BASE = '/classroom';
 
             function escapeHtml(text) {
                 var div = document.createElement('div');
@@ -562,7 +559,7 @@
             }
 
             function goBack() {
-                window.location.href = '/';
+                window.location.href = API_BASE + '/';
             }
 
             window.selectAnswer = selectAnswer;

@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>轻卡安全大讲堂 - 管理后台</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563EB;
@@ -34,7 +31,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background: var(--bg-secondary);
             min-height: 100vh;
             color: var(--text);
@@ -791,6 +788,7 @@
     </div>
 
     <script>
+        const BASE = '/classroom';
         // ==================== 全局变量 ====================
         let currentPage = 'courses';
         let courses = [];
@@ -805,7 +803,7 @@
         async function init() {
             await checkLogin();
             try {
-                const r = await fetch('/api/server-ip');
+                const r = await fetch(BASE + '/api/server-ip');
                 const d = await r.json();
                 if (d.code === 200 && d.ip) serverBaseUrl = `http://${d.ip}:${d.port}`;
             } catch(e) {}
@@ -1154,7 +1152,7 @@
             const formData = new FormData();
             formData.append('file', file);
             try {
-                const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                const response = await fetch(BASE + '/api/upload', { method: 'POST', body: formData });
                 const result = await response.json();
                 progress.style.display = 'none';
                 if (result.code === 200) {
@@ -1205,12 +1203,12 @@
                     progress.style.display = 'block';
                     progress.textContent = '📤 正在下载GIF动图...';
                     try {
-                        const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(imageUrl)}`);
+                        const response = await fetch(BASE + `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`);
                         if (response.ok) {
                             const formData = new FormData();
                             formData.append('file', await response.blob(), 'pasted.gif');
                             progress.textContent = '📤 正在上传GIF动图...';
-                            const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+                            const uploadRes = await fetch(BASE + '/api/upload', { method: 'POST', body: formData });
                             const result = await uploadRes.json();
                             progress.style.display = 'none';
                             if (result.code === 200) {
@@ -1237,7 +1235,7 @@
                         else if (file.type === 'image/jpeg' || file.type === 'image/jpg') ext = 'jpg';
                         formData.append('file', file, `paste-image.${ext}`);
                         try {
-                            const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                            const response = await fetch(BASE + '/api/upload', { method: 'POST', body: formData });
                             const result = await response.json();
                             progress.style.display = 'none';
                             if (result.code === 200) {
@@ -1274,7 +1272,7 @@
             const btn = document.getElementById('saveContentBtn');
             btn.disabled = true; btn.textContent = '保存中...';
             try {
-                const response = await fetch(`/api/courses/${courseId}/rich-content`, {
+                const response = await fetch(BASE + `/api/courses/${courseId}/rich-content`, {
                     method: 'PUT', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rich_content: html })
                 });
@@ -1292,7 +1290,7 @@
         // ==================== 登录相关 ====================
         async function checkLogin() {
             try {
-                const response = await fetch('/api/admin/check');
+                const response = await fetch(BASE + '/api/admin/check');
                 const result = await response.json();
                 if (result.logged_in) {
                     currentAdminRole = result.role || 'super_admin';
@@ -1313,7 +1311,7 @@
             const password = document.getElementById('loginPassword').value;
             if (!username || !password) { alert('请输入用户名和密码'); return; }
             try {
-                const response = await fetch('/api/admin/login', {
+                const response = await fetch(BASE + '/api/admin/login', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
@@ -1349,7 +1347,7 @@
         // ==================== 课程管理（含拖拽排序）====================
         async function loadCourses() {
             try {
-                const response = await fetch('/api/courses');
+                const response = await fetch(BASE + '/api/courses');
                 const result = await response.json();
                 if (result.code === 200) { courses = result.data; renderCourseList(); }
             } catch (error) { console.error('加载课程失败', error); }
@@ -1408,7 +1406,7 @@
         async function saveCourseOrder() {
             const courseOrders = courses.map((c, i) => ({ id: c.id, sort_order: i }));
             try {
-                const response = await fetch('/api/courses/reorder', {
+                const response = await fetch(BASE + '/api/courses/reorder', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ course_orders: courseOrders })
                 });
@@ -1463,7 +1461,7 @@
             };
             if (!data.title) { alert('请输入课程名称'); return; }
             try {
-                const url = id ? `/api/courses/${id}` : '/api/courses';
+                const url = id ? BASE + `/api/courses/${id}` : BASE + '/api/courses';
                 const method = id ? 'PUT' : 'POST';
                 const response = await fetch(url, {
                     method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
@@ -1476,7 +1474,7 @@
         async function deleteCourse(id) {
             if (!confirm('确定要删除这个课程吗？删除后无法恢复！')) return;
             try {
-                const response = await fetch(`/api/courses/${id}`, { method: 'DELETE' });
+                const response = await fetch(BASE + `/api/courses/${id}`, { method: 'DELETE' });
                 const result = await response.json();
                 if (result.code === 200) { loadCourses(); showToast('删除成功'); }
                 else if (result.code === 403) { alert('仅超级管理员可删除课程'); }
@@ -1489,7 +1487,7 @@
             editorDirty = false;
             document.getElementById('contentSaveStatus').textContent = '';
             try {
-                const courseRes = await fetch(`/api/courses/${courseId}`);
+                const courseRes = await fetch(BASE + `/api/courses/${courseId}`);
                 const courseResult = await courseRes.json();
                 if (courseResult.code === 200) {
                     const course = courseResult.data;
@@ -1504,13 +1502,13 @@
 
         async function loadRichContent(courseId) {
             try {
-                const response = await fetch(`/api/courses/${courseId}/rich-content`);
+                const response = await fetch(BASE + `/api/courses/${courseId}/rich-content`);
                 const result = await response.json();
                 const editor = document.getElementById('richEditor');
                 if (result.code === 200 && result.data.rich_content) {
                     editor.innerHTML = result.data.rich_content;
                 } else {
-                    const modRes = await fetch(`/api/courses/${courseId}/modules`);
+                    const modRes = await fetch(BASE + `/api/courses/${courseId}/modules`);
                     const modResult = await modRes.json();
                     if (modResult.code === 200 && modResult.data.length > 0) {
                         let html = '';
@@ -1545,7 +1543,7 @@
         // ==================== 题目管理（支持单选/多选）====================
         async function loadQuestions(courseId) {
             try {
-                const response = await fetch(`/api/courses/${courseId}/questions`);
+                const response = await fetch(BASE + `/api/courses/${courseId}/questions`);
                 const result = await response.json();
                 const container = document.getElementById('questionList');
                 if (result.code === 200 && result.data.length > 0) {
@@ -1599,7 +1597,7 @@
 
         async function editQuestion(questionId) {
             try {
-                const response = await fetch(`/api/courses/${currentCourseId}/questions`);
+                const response = await fetch(BASE + `/api/courses/${currentCourseId}/questions`);
                 const result = await response.json();
                 if (result.code === 200) {
                     const q = result.data.find(q => q.id === questionId);
@@ -1640,7 +1638,7 @@
             const answer = Array.from(checked).map(el => parseInt(el.value));
             const data = { question, options, question_type: isMultiple ? 'multiple' : 'single', answer: isMultiple ? answer : answer[0] };
             try {
-                const url = id ? `/api/questions/${id}` : `/api/courses/${courseId}/questions`;
+                const url = id ? BASE + `/api/questions/${id}` : BASE + `/api/courses/${courseId}/questions`;
                 const method = id ? 'PUT' : 'POST';
                 const response = await fetch(url, {
                     method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
@@ -1653,7 +1651,7 @@
         async function deleteQuestion(questionId) {
             if (!confirm('确定要删除吗？')) return;
             try {
-                const response = await fetch(`/api/questions/${questionId}`, { method: 'DELETE' });
+                const response = await fetch(BASE + `/api/questions/${questionId}`, { method: 'DELETE' });
                 const result = await response.json();
                 if (result.code === 200) { loadQuestions(currentCourseId); showToast('删除成功'); }
             } catch (error) { alert('删除失败'); }
@@ -1673,7 +1671,7 @@
             actions.classList.remove('hidden');
             container.innerHTML = '<div class="empty-state">加载中...</div>';
             try {
-                const response = await fetch(`/api/courses/${courseId}/scores`);
+                const response = await fetch(BASE + `/api/courses/${courseId}/scores`);
                 const result = await response.json();
                 if (result.code === 200) {
                     if (result.data.length === 0) { container.innerHTML = '<div class="empty-state">暂无成绩记录</div>'; return; }
@@ -1684,7 +1682,7 @@
 
         function exportScores() {
             const courseId = document.getElementById('scoreCourseSelect').value;
-            if (courseId) window.location.href = `/api/courses/${courseId}/scores/export`;
+            if (courseId) window.location.href = BASE + '/api/courses/' + courseId + '/scores/export';
         }
 
         // ==================== 二维码 ====================
@@ -1692,7 +1690,7 @@
             const container = document.getElementById('qrcodeList');
             if (courses.length === 0) { container.innerHTML = '<div class="empty-state">暂无课程</div>'; return; }
             container.innerHTML = courses.map(c => {
-                const url = `${serverBaseUrl}/course/${c.id}`;
+                const url = window.location.origin + '/classroom/course/' + c.id;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
                 return `<div style="display:inline-block;margin:15px;text-align:center;"><div class="qr-code"><img src="${qrUrl}" alt="${escapeAttr(c.title)}" style="width:180px;height:180px;"><div style="margin-top:10px;font-weight:600;font-size:15px;">${escapeHtml(c.title)}</div></div><div class="qr-url">${escapeHtml(url)}</div><div style="margin-top:8px;"><button class="btn btn-edit" style="font-size:12px;" onclick="window.open('${escapeAttr(url)}')">🔗 直接打开</button></div></div>`;
             }).join('');
@@ -1705,7 +1703,7 @@
             if (!oldPassword || !newPassword) { alert('请填写完整'); return; }
             if (newPassword.length < 6) { alert('新密码至少6位'); return; }
             try {
-                const response = await fetch('/api/admin/password', {
+                const response = await fetch(BASE + '/api/admin/password', {
                     method: 'PUT', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
                 });
@@ -1719,7 +1717,7 @@
         async function loadAdmins() {
             console.log('[loadAdmins] 开始加载管理员列表');
             try {
-                const response = await fetch('/api/admin/accounts');
+                const response = await fetch(BASE + '/api/admin/accounts');
                 console.log('[loadAdmins] HTTP状态:', response.status);
                 const result = await response.json();
                 console.log('[loadAdmins] 响应数据:', result);
@@ -1766,7 +1764,7 @@
             const data = { username, role };
             if (password) data.password = password;
             try {
-                const url = id ? `/api/admin/accounts/${id}` : '/api/admin/accounts';
+                const url = id ? BASE + `/api/admin/accounts/${id}` : BASE + '/api/admin/accounts';
                 const method = id ? 'PUT' : 'POST';
                 const response = await fetch(url, {
                     method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
@@ -1780,7 +1778,7 @@
         async function deleteAdmin(id, username) {
             if (!confirm(`确定要删除管理员「${username}」吗？`)) return;
             try {
-                const response = await fetch(`/api/admin/accounts/${id}`, { method: 'DELETE' });
+                const response = await fetch(BASE + `/api/admin/accounts/${id}`, { method: 'DELETE' });
                 const result = await response.json();
                 if (result.code === 200) { loadAdmins(); showToast('删除成功'); }
                 else { alert(result.msg); }
